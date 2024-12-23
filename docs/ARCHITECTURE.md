@@ -158,6 +158,10 @@ public class Pick
 - Name
 - Abbreviation
 - IconUrl
+- BannerUrl
+- PrimaryColor
+- SecondaryColor
+- TertiaryColor
 
 ## Security Considerations
 
