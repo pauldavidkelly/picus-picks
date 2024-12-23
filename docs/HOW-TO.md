@@ -75,7 +75,7 @@ npx create-next-app@latest picus-frontend --typescript --tailwind --eslint
 cd picus-frontend
 
 # Install shadcn/ui CLI and initialize
-npx shadcn-ui@latest init
+npx shadcn@latest init
 ```
 
 Setting up environment variables for development:
