@@ -81,6 +81,80 @@ When prompted about React 19 compatibility, choose --legacy-peer-deps for the mo
 
 ### Setting up Entity Framework Core
 
+First, we'll install the required NuGet packages for Entity Framework Core with PostgreSQL support. Navigate to your backend project directory and run:
+
+```powershell
+cd backend/src/Picus.Api
+dotnet add package Microsoft.EntityFrameworkCore
+dotnet add package Microsoft.EntityFrameworkCore.Design
+dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
+```
+
+These packages provide:
+- Entity Framework Core: Our main ORM framework
+- EF Core Design: Tools for migrations and reverse engineering
+- Npgsql PostgreSQL: PostgreSQL database provider for EF Core
+
+### Creating the Data Models
+
+Create a new Models folder in your project and add the following model classes based on our schema. Each model represents a table in our database and follows best practices for entity design:
+
+```powershell
+mkdir Models
+cd Models
+```
+
+Create the following files with their respective classes. We'll implement these one by one, starting with the foundation models (Team, User) and building up to the more complex ones (Picks, Games) that depend on them.
+
+Here's the recommended implementation order:
+1. Team.cs - Foundation model for NFL teams
+2. User.cs - Core user information model
+3. League.cs - League/pool management model
+4. Game.cs - Game scheduling and results model
+5. Pick.cs - User predictions model
+
+### Setting up the Database Context
+
+After creating our models, we'll need to create an ApplicationDbContext class that will manage our database interactions:
+
+```powershell
+mkdir Data
+cd Data
+```
+
+The DbContext will:
+- Define DbSet properties for each model
+- Configure model relationships
+- Set up any required model configurations
+- Handle connection string management
+
+### Creating the Initial Migration
+
+Once our models and DbContext are ready, we'll create and apply the initial migration:
+
+```powershell
+# Create the migration
+dotnet ef migrations add InitialCreate
+
+# Apply the migration to create the database
+dotnet ef database update
+```
+
+### Database Connection Configuration
+
+Configure the database connection in appsettings.json:
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Database=picus;Username=your_username;Password=your_password"
+  }
+}
+```
+
+Remember to replace the username and password with your actual PostgreSQL credentials.
+### Setting up Entity Framework Core
+
 When building our backend, we start by setting up Entity Framework Core, which will handle our database operations. First, install the required NuGet packages by running these commands in your backend project directory:
 
 ```powershell
