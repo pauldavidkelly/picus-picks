@@ -97,42 +97,40 @@ These packages provide:
 
 ### Creating the Data Models
 
-Create a new Models folder in your project and add the following model classes based on our schema. Each model represents a table in our database:
+Create a new Models folder in your project and add the following model classes based on our schema. Each model represents a table in our database and follows best practices for entity design:
 
 ```powershell
 mkdir Models
 cd Models
 ```
 
-Create the following files:
+Create the following files with their respective classes. We'll implement these one by one, starting with the foundation models (Team, User) and building up to the more complex ones (Picks, Games) that depend on them.
 
-1. User.cs - Represents application users
-2. Game.cs - Stores NFL game information
-3. Pick.cs - Records user predictions
-4. League.cs - Manages pick pools
-5. Team.cs - Stores NFL team data
-
-Each model should implement proper relationships and data annotations. Here's how to scaffold them:
-
-```powershell
-dotnet new classlib -n Picus.Models
-cd Picus.Models
-```
+Here's the recommended implementation order:
+1. Team.cs - Foundation model for NFL teams
+2. User.cs - Core user information model
+3. League.cs - League/pool management model
+4. Game.cs - Game scheduling and results model
+5. Pick.cs - User predictions model
 
 ### Setting up the Database Context
 
-Create a new Data folder for your DbContext:
+After creating our models, we'll need to create an ApplicationDbContext class that will manage our database interactions:
 
 ```powershell
 mkdir Data
 cd Data
 ```
 
-The DbContext will manage database sessions and map our models to database tables.
+The DbContext will:
+- Define DbSet properties for each model
+- Configure model relationships
+- Set up any required model configurations
+- Handle connection string management
 
 ### Creating the Initial Migration
 
-After setting up your models and DbContext, create and apply the initial migration:
+Once our models and DbContext are ready, we'll create and apply the initial migration:
 
 ```powershell
 # Create the migration
@@ -144,7 +142,7 @@ dotnet ef database update
 
 ### Database Connection Configuration
 
-Add the database connection string to your appsettings.json:
+Configure the database connection in appsettings.json:
 
 ```json
 {
@@ -153,6 +151,8 @@ Add the database connection string to your appsettings.json:
   }
 }
 ```
+
+Remember to replace the username and password with your actual PostgreSQL credentials.
 
 ## Running the Application
 
