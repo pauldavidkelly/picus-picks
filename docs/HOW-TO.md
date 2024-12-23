@@ -79,7 +79,80 @@ When prompted about React 19 compatibility, choose --legacy-peer-deps for the mo
 
 ## Backend Setup
 
-[Previous content about backend setup continues...]
+### Setting up Entity Framework Core
+
+First, we'll install the required NuGet packages for Entity Framework Core with PostgreSQL support. Navigate to your backend project directory and run:
+
+```powershell
+cd backend/src/Picus.Api
+dotnet add package Microsoft.EntityFrameworkCore
+dotnet add package Microsoft.EntityFrameworkCore.Design
+dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
+```
+
+These packages provide:
+- Entity Framework Core: Our main ORM framework
+- EF Core Design: Tools for migrations and reverse engineering
+- Npgsql PostgreSQL: PostgreSQL database provider for EF Core
+
+### Creating the Data Models
+
+Create a new Models folder in your project and add the following model classes based on our schema. Each model represents a table in our database:
+
+```powershell
+mkdir Models
+cd Models
+```
+
+Create the following files:
+
+1. User.cs - Represents application users
+2. Game.cs - Stores NFL game information
+3. Pick.cs - Records user predictions
+4. League.cs - Manages pick pools
+5. Team.cs - Stores NFL team data
+
+Each model should implement proper relationships and data annotations. Here's how to scaffold them:
+
+```powershell
+dotnet new classlib -n Picus.Models
+cd Picus.Models
+```
+
+### Setting up the Database Context
+
+Create a new Data folder for your DbContext:
+
+```powershell
+mkdir Data
+cd Data
+```
+
+The DbContext will manage database sessions and map our models to database tables.
+
+### Creating the Initial Migration
+
+After setting up your models and DbContext, create and apply the initial migration:
+
+```powershell
+# Create the migration
+dotnet ef migrations add InitialCreate
+
+# Apply the migration to create the database
+dotnet ef database update
+```
+
+### Database Connection Configuration
+
+Add the database connection string to your appsettings.json:
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Database=picus;Username=your_username;Password=your_password"
+  }
+}
+```
 
 ## Running the Application
 
