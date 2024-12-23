@@ -47,29 +47,39 @@ npm install tailwind-merge
 shadcn/ui provides our component library and design system. To set it up, run:
 
 ```powershell
-# Create new Next.js project with Tailwind
-npx create-next-app@latest picus-frontend --typescript --tailwind --eslint
-
-# Navigate to project
-cd picus-frontend
-
-# Install shadcn/ui CLI and initialize
-npx shadcn@latest init
-
+npx shadcn-ui@latest init
 ```
 
-When prompted, select these options:
-- Would you like to use TypeScript? → Yes
-- Which style would you like to use? → New York
-- Which color would you like to use as base color? → Slate
-- Where is your global CSS file? → app/globals.css
-- Would you like to use CSS variables for colors? → Yes
-- Where is your tailwind.config.js located? → tailwind.config.js
-- Configure the import alias for components? → @/components
-- Configure the import alias for utilities? → @/lib/utils
-- Use --legacy-peer-deps when offered the choice for React 19 compatibility
+When prompted, choose these options and here's why each matters:
+1. Would you like to use TypeScript? → Yes
+   (Enables better code checking and autocompletion)
 
-[Previous content about PostgreSQL setup, backend configuration, etc. remains unchanged...]
+2. Which style would you like to use? → New York
+   (Provides a bold, modern look that works well for sports applications)
+
+3. Which color would you like to use as base color? → Slate
+   (A professional blue-gray that works well with sports content)
+
+4. Where is your global CSS file? → app/globals.css
+   (Matches our Next.js app structure)
+
+5. Would you like to use CSS variables for colors? → Yes
+   (Makes theme customization easier)
+
+6. Where is your tailwind.config.js located? → tailwind.config.js
+   (Default location for our styling configuration)
+
+7. Configure the import alias for components? → @/components
+   (Makes importing components more straightforward)
+
+8. Configure the import alias for utilities? → @/lib/utils
+   (Keeps our utility functions organized)
+
+When prompted about React 19 compatibility, choose --legacy-peer-deps for the most stable setup.
+
+## Backend Setup
+
+[Previous content about backend setup continues...]
 
 ## Running the Application
 
@@ -80,9 +90,7 @@ After completing the setup, you can start the development server:
 cd frontend
 npm run dev
 
-# In a separate terminal, start the backend server
+# In a separate terminal, start the backend server (once implemented)
 cd backend/src/Picus.Api
 dotnet run
 ```
-
-[Previous content continues with testing setup, deployment setup, etc.]
