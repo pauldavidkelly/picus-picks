@@ -1,121 +1,55 @@
 # Picus NFL Picks App - Architecture Overview
 
-This document provides a high-level overview of the Picus NFL Picks app architecture in simple terms.
-
-## System Overview
-
-Picus is a self-hosted NFL picks application that allows users to make predictions about NFL games. The application consists of:
-
-1. A C# Web API Backend: Handles all business logic, data storage, and external API communications
-2. A React Frontend: Provides an intuitive user interface for making and viewing picks
-3. A PostgreSQL Database: Stores all our application data
-
-## Key Features
-
-### Pick Management
-- Users can make money line picks for upcoming games
-- Picks are hidden from other users until the game deadline
-- After deadline, picks are displayed in a table format:
-  - Players' names as column headers
-  - Games listed down the side
-  - Team badges/icons showing each player's pick
-- Future expansion planned for spread and over/under picks
-
-### Dashboard
-The user dashboard shows:
-- Upcoming games requiring picks
-- Recent pick results
-- Performance statistics
-- League standings
+## Overview
+The Picus NFL Picks App is a web application that allows users to make predictions about NFL games and compete with friends in private leagues. The application is built using a modern, scalable architecture with clear separation of concerns.
 
 ## Technology Stack
+- **Backend**: .NET 8 Web API
+- **Database**: PostgreSQL
+- **Authentication**: Auth0
+- **Frontend**: React with TypeScript
+- **API Documentation**: Swagger/OpenAPI
+- **Containerization**: Docker
+- **CI/CD**: GitHub Actions
 
-### Backend
-- C# with .NET Core Web API
-- Entity Framework Core for database access
-- LINQ for querying data
-- Auth0 for authentication
-
-### Frontend
-- React for the user interface
-- Auth0 React SDK for authentication
-- A component library (to be decided) for UI elements
-
-### Database
-- PostgreSQL for data storage
-- Structured to support:
-  - User data and authentication
-  - Game schedules and results
-  - Player picks and deadlines
-  - League information
-
-## Application Structure
-
-Our application follows a simplified clean architecture with three main parts:
-
-### 1. API Layer (Controllers)
-Responsibilities:
-- Handle HTTP requests
-- Validate incoming data
-- Route requests to appropriate services
-- Format responses
-
-Example Controller Structure:
-```csharp
-public class PicksController : ControllerBase
-{
-    private readonly IPickService _pickService;
-    
-    // Handle getting picks
-    [HttpGet]
-    public async Task<IActionResult> GetPicks(int weekId)
-    
-    // Handle submitting picks
-    [HttpPost]
-    public async Task<IActionResult> SubmitPicks(PickSubmissionDto picks)
-}
+## Project Structure
+```
+backend/
+├── src/
+│   ├── Picus.Api/           # Main API project
+│   ├── Picus.Core/          # Core business logic
+│   └── Picus.Data/          # Data access layer
+├── tests/
+│   ├── Picus.Api.Tests/     # API integration tests
+│   └── Picus.Core.Tests/    # Core unit tests
+└── docs/                    # Documentation
 ```
 
-### 2. Service Layer
-Responsibilities:
-- Implement business logic
-- Enforce pick deadlines
-- Calculate standings
-- Manage data access
+## Key Components
 
-Example Service Structure:
-```csharp
-public class PickService
-{
-    private readonly ApplicationDbContext _context;
-    
-    // Business logic for submitting picks
-    public async Task<Result> SubmitPicks(int userId, List<Pick> picks)
-    {
-        // Validate deadline
-        // Save picks
-        // Return result
-    }
-}
-```
+### API Layer (Picus.Api)
+- RESTful endpoints following HTTP standards
+- Controller-based routing
+- Request/Response DTOs
+- Global error handling
+- API versioning
+- Authentication middleware
+- Swagger documentation
 
-### 3. Data Access Layer
-Responsibilities:
-- Define database structure
-- Handle data operations
-- Manage relationships between entities
+### Core Layer (Picus.Core)
+- Business logic
+- Domain models
+- Interfaces
+- Services
+- Validation rules
+- Custom exceptions
 
-Example Entity Structure:
-```csharp
-public class Pick
-{
-    public int Id { get; set; }
-    public int UserId { get; set; }
-    public int GameId { get; set; }
-    public int TeamId { get; set; }
-    public DateTime SubmittedAt { get; set; }
-}
-```
+### Data Layer (Picus.Data)
+- Entity Framework Core
+- Repository pattern
+- Database migrations
+- Data seeding
+- Query optimization
 
 ## Database Schema
 
@@ -123,6 +57,9 @@ public class Pick
 - Id (Primary Key)
 - Auth0Id (for authentication)
 - Username
+- DisplayName
+- TimeZone
+- IsActive
 - Role (Admin/Player)
 - LeagueId
 
@@ -133,54 +70,125 @@ public class Pick
 - AwayTeamId
 - GameTime
 - PickDeadline
-- FinalScore
 - Week
 - Season
-
-### Picks Table
-- Id (Primary Key)
-- UserId (Foreign Key)
-- GameId (Foreign Key)
-- SelectedTeamId
-- SubmissionTime
-- IsCorrect
-- Points
-
-### Leagues Table
-- Id (Primary Key)
-- Name
-- CreatedAt
-- AdminUserId
+- IsCompleted
+- IsPlayoffs
+- Location
+- HomeTeamScore
+- AwayTeamScore
+- WinningTeamId (Foreign Key, nullable)
 
 ### Teams Table
 - Id (Primary Key)
 - ESPNTeamId
 - Name
 - Abbreviation
+- City
 - IconUrl
 - BannerUrl
 - PrimaryColor
 - SecondaryColor
 - TertiaryColor
+- Conference (AFC/NFC)
+- Division (North/South/East/West)
 
-## Security Considerations
+### Picks Table
+- Id (Primary Key)
+- UserId (Foreign Key)
+- GameId (Foreign Key)
+- SelectedTeamId (Foreign Key)
+- IsCorrect
+- Points
 
-### Pick Visibility
-- Database queries filter picks based on game deadlines
-- API endpoints enforce visibility rules
-- Frontend respects these restrictions in the UI
+### Leagues Table
+- Id (Primary Key)
+- Name
+- AdminUserId (Foreign Key)
+
+## Authentication & Authorization
+- Auth0 integration for secure user authentication
+- JWT token validation
+- Role-based access control (Admin/Player)
+- Secure password handling
+
+## API Endpoints
 
 ### Authentication
-- Auth0 handles user authentication
-- JWT tokens secure API requests
-- Role-based access controls protect admin functions
+- POST /api/auth/login
+- POST /api/auth/logout
+- GET /api/auth/profile
 
-## Future Expansion Considerations
+### Users
+- GET /api/users
+- GET /api/users/{id}
+- PUT /api/users/{id}
+- DELETE /api/users/{id}
 
-The schema and architecture support future additions:
-- Spread betting
-- Over/under predictions
-- Historical statistics
-- Additional league features
+### Games
+- GET /api/games
+- GET /api/games/{id}
+- POST /api/games
+- PUT /api/games/{id}
+- DELETE /api/games/{id}
 
-However, we're keeping the initial implementation focused on core features to maintain clarity and ease of understanding.
+### Picks
+- GET /api/picks
+- GET /api/picks/{id}
+- POST /api/picks
+- PUT /api/picks/{id}
+- DELETE /api/picks/{id}
+
+### Leagues
+- GET /api/leagues
+- GET /api/leagues/{id}
+- POST /api/leagues
+- PUT /api/leagues/{id}
+- DELETE /api/leagues/{id}
+
+## Error Handling
+- Standardized error responses
+- HTTP status codes
+- Detailed error messages (development only)
+- Error logging
+
+## Caching Strategy
+- In-memory caching for frequently accessed data
+- Redis for distributed caching (future)
+- Cache invalidation rules
+
+## Monitoring & Logging
+- Application metrics
+- Performance monitoring
+- Error tracking
+- Audit logging
+- Health checks
+
+## Security Measures
+- HTTPS enforcement
+- CORS policy
+- Input validation
+- SQL injection prevention
+- XSS protection
+- Rate limiting
+
+## Deployment
+- Docker containerization
+- Environment-specific configurations
+- Database migrations
+- Zero-downtime updates
+- Backup strategy
+
+## Testing Strategy
+- Unit tests
+- Integration tests
+- API tests
+- Load tests
+- Security tests
+
+## Future Enhancements
+- Real-time updates
+- Mobile app
+- Advanced statistics
+- Social features
+- Machine learning predictions
