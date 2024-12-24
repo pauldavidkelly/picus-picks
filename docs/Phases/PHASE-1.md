@@ -45,23 +45,19 @@ Here's a breakdown into smaller tasks:
 
   4. **Create DbContext:** Create a class that inherits from DbContext (e.g., ApplicationDbContext.cs). This class represents your connection to the database and will contain DbSet<T> properties for each of your entity types.
 
-  5. **Configure Connection String:** In your appsettings.json file, add the connection string for your PostgreSQL database (either a local development instance or one on Render.com).
+  5. **Configure Connection String:** In your appsettings.json file, add the connection string for your PostgreSQL database (either a local development instance or one on Render.com). Ensure the connection string is stored in a secure way so it is not checked into the repository.
 
 - 1. **Task 1.3: Setting up the Database (Migrations) and Seeding Team Data**
-
-     - 
 
      - **Why we're doing this:** We need to create the database structure and populate the Teams table with initial data. This data is relatively static, so seeding is appropriate.
 
      - **Instructions:**
 
-       1. 
+       1. **Add Initial Migration:** Open the Package Manager Console or the .NET CLI and run the command Add-Migration InitialCreate.
 
-       2. **Add Initial Migration:** Open the Package Manager Console or the .NET CLI and run the command Add-Migration InitialCreate.
+       2. **Modify the DbContext for Seeding:** In your ApplicationDbContext.cs file, override the OnModelCreating method to seed the Teams table. You'll need to manually create Team objects with the necessary data (name, abbreviation, ESPN Team ID, icon URL). You can find this static team data online or from an existing sports API source.
 
-       3. **Modify the DbContext for Seeding:** In your ApplicationDbContext.cs file, override the OnModelCreating method to seed the Teams table. You'll need to manually create Team objects with the necessary data (name, abbreviation, ESPN Team ID, icon URL). You can find this static team data online or from an existing sports API source.
-
-       4. **Example Code (ApplicationDbContext.cs):**
+       3. **Example Code (ApplicationDbContext.cs):**
 
           ```
           using Microsoft.EntityFrameworkCore;
@@ -95,7 +91,7 @@ Here's a breakdown into smaller tasks:
 
           Use code [with caution](https://support.google.com/legal/answer/13505487).C#
 
-       5. **Apply Migrations:** Run the command Update-Database. This will create the tables and seed the Teams data.
+       4. **Apply Migrations:** Run the command Update-Database. This will create the tables and seed the Teams data.
 
 **Task 1.4: Integrating Auth0 for Authentication**
 
@@ -111,7 +107,7 @@ Here's a breakdown into smaller tasks:
 
   4. **Install Auth0 Packages:** In your backend project, install the Microsoft.AspNetCore.Authentication.JwtBearer NuGet package.
 
-  5. **Configure Authentication in Startup.cs:** In the ConfigureServices method of your Startup.cs file, add the necessary code to configure JWT authentication using your Auth0 credentials. You'll need to validate the JWT tokens issued by Auth0.
+  5. **Configure Authentication in Startup.cs:** In the ConfigureServices method of your Startup.cs file, add the necessary code to configure JWT authentication using your Auth0 credentials. You'll need to validate the JWT tokens issued by Auth0. Ensure the credentials are stored in a secure way so they are not checked into the git repository.
 
   6. **Example Code (Startup.cs):**
 
