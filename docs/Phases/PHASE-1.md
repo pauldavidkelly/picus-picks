@@ -205,13 +205,63 @@ Here's a breakdown into smaller tasks:
 
   11. **Test the Authentication:** Run the application and use Swagger UI at `/swagger` to test the authenticated endpoints.
 
-**Task 1.5: Setting up the Frontend Project (React)**
+**Task 1.5: Setting up the Frontend Project (React + Shadcn UI)**
 
-- **Why we're doing this:** The frontend is what users will see and interact with. React is a popular library for building user interfaces.
+- **Why we're doing this:** We need a modern, responsive user interface for users to interact with our application. Using React with Shadcn UI will give us a clean, professional look with pre-built components.
+
 - **Instructions:**
-  1. **Create a New React App:** Use create-react-app or your preferred method to create a new React project. Name it something like picus-frontend.
-  2. **Install Dependencies:** Install the auth0-react SDK and axios (for making API calls). Also install shadcn-ui and its dependencies as per its documentation.
-  3. **Basic Structure:** Familiarize yourself with the basic structure of a React app (e.g., src folder, App.js, index.js).
+  1. **Create Vite Project:** Set up a new React + TypeScript project using Vite for better performance and development experience.
+     ```bash
+     npm create vite@latest frontend -- --template react-ts
+     ```
+
+  2. **Install Dependencies:** Install necessary packages:
+     - Auth0 React SDK for authentication
+     - React Router for navigation
+     - Tailwind CSS for styling
+     - Shadcn UI dependencies
+     ```bash
+     npm install @auth0/auth0-react axios react-router-dom tailwindcss postcss autoprefixer @radix-ui/react-slot class-variance-authority clsx tailwind-merge lucide-react
+     ```
+
+  3. **Configure Tailwind and Shadcn UI:**
+     - Initialize Tailwind CSS
+     - Set up the base styles and configuration
+     - Create the utils.ts file for Shadcn UI utilities
+     - Set up the theme configuration in tailwind.config.js
+
+  4. **Create Basic Components:**
+     - Set up the Button component from Shadcn UI
+     - Create a Navbar component with authentication controls
+     - Set up the basic application layout
+
+  5. **Configure Authentication:**
+     - Set up Auth0Provider in App.tsx
+     - Create environment variables for Auth0 configuration
+     - Implement login/logout functionality in the Navbar
+
+  6. **Project Structure:**
+     ```
+     frontend/
+     ├── src/
+     │   ├── components/
+     │   │   ├── ui/
+     │   │   │   └── button.tsx
+     │   │   └── Navbar.tsx
+     │   ├── lib/
+     │   │   └── utils.ts
+     │   ├── App.tsx
+     │   └── main.tsx
+     ├── .env.example
+     ├── tailwind.config.js
+     └── package.json
+     ```
+
+**Status:** 
+- Basic React application structure set up
+- Authentication UI implemented
+- Shadcn UI configured with initial components
+- Project ready for implementing game listing and pick submission features
 
 **Task 1.6: Integrating Auth0 in the Frontend**
 
