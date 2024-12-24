@@ -24,7 +24,7 @@ Here's a breakdown into smaller tasks:
 
   3. **Example Code (Game.cs):**
 
-     ```
+     ```csharp
      public class Game
      {
          public int Id { get; set; }
@@ -59,7 +59,7 @@ Here's a breakdown into smaller tasks:
 
        3. **Example Code (ApplicationDbContext.cs):**
 
-          ```
+          ```csharp
           using Microsoft.EntityFrameworkCore;
           
           public class ApplicationDbContext : DbContext
@@ -107,37 +107,103 @@ Here's a breakdown into smaller tasks:
 
   4. **Install Auth0 Packages:** In your backend project, install the Microsoft.AspNetCore.Authentication.JwtBearer NuGet package.
 
-  5. **Configure Authentication in Startup.cs:** In the ConfigureServices method of your Startup.cs file, add the necessary code to configure JWT authentication using your Auth0 credentials. You'll need to validate the JWT tokens issued by Auth0. Ensure the credentials are stored in a secure way so they are not checked into the git repository.
-
-  6. **Example Code (Startup.cs):**
-
-     ```
-     public void ConfigureServices(IServiceCollection services)
+  5. **Create Auth0 Settings Class:** Create a class to hold Auth0 configuration:
+     ```csharp
+     public class Auth0Settings
      {
-         // ... other services ...
-         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-             .AddJwtBearer(options =>
+         public string Domain { get; set; } = string.Empty;
+         public string Audience { get; set; } = string.Empty;
+     }
+     ```
+
+  6. **Configure appsettings.json:** Add the Auth0 configuration structure to appsettings.json (without sensitive values):
+     ```json
+     {
+       "Auth0": {
+         "Domain": "",
+         "Audience": ""
+       }
+     }
+     ```
+
+  7. **Configure appsettings.Development.json:** Add your actual Auth0 values to the development settings file (which should be in .gitignore):
+     ```json
+     {
+       "Auth0": {
+         "Domain": "your-auth0-domain.auth0.com",
+         "Audience": "your-api-identifier"
+       }
+     }
+     ```
+
+  8. **Configure Authentication in Program.cs:** Add the necessary code to configure JWT authentication using your Auth0 credentials:
+     ```csharp
+     // Configure Auth0 Settings
+     var auth0Settings = builder.Configuration.GetSection("Auth0").Get<Auth0Settings>();
+     builder.Services.Configure<Auth0Settings>(builder.Configuration.GetSection("Auth0"));
+
+     // Configure JWT Authentication
+     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+         .AddJwtBearer(options =>
+         {
+             options.Authority = $"https://{auth0Settings?.Domain}/";
+             options.Audience = auth0Settings?.Audience;
+             options.TokenValidationParameters = new TokenValidationParameters
              {
-                 options.Authority = $"https://{Configuration["Auth0:Domain"]}/";
-                 options.Audience = Configuration["Auth0:Audience"];
-             });
-         // ...
-     }
-     
-     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-     {
-         // ...
-         app.UseAuthentication();
-         app.UseAuthorization();
-         // ...
-     }
+                 NameClaimType = "name",
+                 RoleClaimType = "https://picus-picks/roles"
+             };
+         });
      ```
 
-     content_copydownload
+  9. **Configure Swagger for JWT Authentication:** Enhance Swagger configuration to support testing authenticated endpoints:
+     ```csharp
+     builder.Services.AddSwaggerGen(c =>
+     {
+         c.SwaggerDoc("v1", new OpenApiInfo { Title = "Picus Picks API", Version = "v1" });
+         
+         c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+         {
+             Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer {token}' in the text input below.",
+             Name = "Authorization",
+             In = ParameterLocation.Header,
+             Type = SecuritySchemeType.ApiKey,
+             Scheme = "Bearer"
+         });
 
-     Use code [with caution](https://support.google.com/legal/answer/13505487).C#
+         c.AddSecurityRequirement(new OpenApiSecurityRequirement
+         {
+             {
+                 new OpenApiSecurityScheme
+                 {
+                     Reference = new OpenApiReference
+                     {
+                         Type = ReferenceType.SecurityScheme,
+                         Id = "Bearer"
+                     }
+                 },
+                 Array.Empty<string>()
+             }
+         });
+     });
+     ```
 
-  7. **Secure API Endpoints:** Use the [Authorize] attribute on your controllers or specific actions that require authentication.
+  10. **Create a Test Authentication Controller:** Create a simple controller to test the authentication:
+      ```csharp
+      [ApiController]
+      [Route("api/[controller]")]
+      public class TestAuthController : ControllerBase
+      {
+          [HttpGet]
+          [Authorize]
+          public IActionResult Get()
+          {
+              return Ok(new { message = "You are authenticated!" });
+          }
+      }
+      ```
+
+  11. **Test the Authentication:** Run the application and use Swagger UI at `/swagger` to test the authenticated endpoints.
 
 **Task 1.5: Setting up the Frontend Project (React)**
 
@@ -149,8 +215,6 @@ Here's a breakdown into smaller tasks:
 
 **Task 1.6: Integrating Auth0 in the Frontend**
 
-
-
 - **Why we're doing this:** Allows users to log in and securely interact with the backend.
 
 - **Instructions:**
@@ -161,7 +225,7 @@ Here's a breakdown into smaller tasks:
 
   3. **Example Code (index.js):**
 
-     ```
+     ```javascript
      import React from 'react';
      import ReactDOM from 'react-dom/client';
      import App from './App';
@@ -210,7 +274,7 @@ Here's a breakdown into smaller tasks:
 
   6. **Example Code (GameDataService.cs - simplified):**
 
-     ```
+     ```csharp
      using System.Net.Http;
      using System.Text.Json;
      using System.Threading.Tasks;
@@ -311,7 +375,7 @@ Here's a breakdown into smaller tasks:
 
        2. **Example Code (GamesController.cs updated):**
 
-          ```
+          ```csharp
           [ApiController]
           [Route("api/[controller]")]
           public class GamesController : ControllerBase
