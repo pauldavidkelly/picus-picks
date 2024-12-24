@@ -205,9 +205,7 @@ Here's a breakdown into smaller tasks:
 
   11. **Test the Authentication:** Run the application and use Swagger UI at `/swagger` to test the authenticated endpoints.
 
-**Task 1.5: Setting up the Frontend Project (React + Shadcn UI)**
-
-- **Why we're doing this:** We need a modern, responsive user interface for users to interact with our application. Using React with Shadcn UI will give us a clean, professional look with pre-built components.
+**Task 1.5: Setting Up the Frontend Project (React + TypeScript + Vite)**
 
 - **Instructions:**
   1. **Create Vite Project:** Set up a new React + TypeScript project using Vite for better performance and development experience.
@@ -215,91 +213,159 @@ Here's a breakdown into smaller tasks:
      npm create vite@latest frontend -- --template react-ts
      ```
 
-  2. **Install Dependencies:** Install necessary packages:
-     - Auth0 React SDK for authentication
-     - React Router for navigation
-     - Tailwind CSS for styling
-     - Shadcn UI dependencies
+  2. **Install Dependencies:** Install necessary packages for the project:
      ```bash
-     npm install @auth0/auth0-react axios react-router-dom tailwindcss postcss autoprefixer @radix-ui/react-slot class-variance-authority clsx tailwind-merge lucide-react
+     cd frontend
+     npm install
+     npm install @auth0/auth0-react react-router-dom tailwindcss postcss autoprefixer
+     npm install @radix-ui/react-slot class-variance-authority clsx tailwind-merge
      ```
 
-  3. **Configure Tailwind and Shadcn UI:**
-     - Initialize Tailwind CSS
-     - Set up the base styles and configuration
-     - Create the utils.ts file for Shadcn UI utilities
-     - Set up the theme configuration in tailwind.config.js
-
-  4. **Create Basic Components:**
-     - Set up the Button component from Shadcn UI
-     - Create a Navbar component with authentication controls
-     - Set up the basic application layout
-
-  5. **Configure Authentication:**
-     - Set up Auth0Provider in App.tsx
-     - Create environment variables for Auth0 configuration
-     - Implement login/logout functionality in the Navbar
-
-  6. **Project Structure:**
-     ```
-     frontend/
-     ├── src/
-     │   ├── components/
-     │   │   ├── ui/
-     │   │   │   └── button.tsx
-     │   │   └── Navbar.tsx
-     │   ├── lib/
-     │   │   └── utils.ts
-     │   ├── App.tsx
-     │   └── main.tsx
-     ├── .env.example
-     ├── tailwind.config.js
-     └── package.json
+  3. **Configure Tailwind CSS:** Initialize Tailwind CSS configuration:
+     ```bash
+     npx tailwindcss init -p
      ```
 
-**Status:** 
-- Basic React application structure set up
-- Authentication UI implemented
-- Shadcn UI configured with initial components
-- Project ready for implementing game listing and pick submission features
+  4. **Set up Shadcn UI:** Install and configure Shadcn UI components:
+     ```bash
+     npx shadcn-ui@latest init
+     ```
+
+  5. **Create Environment Files:**
+     - Create `.env` and `.env.example` files in the frontend directory
+     - Add Auth0 configuration variables:
+     ```
+     VITE_AUTH0_DOMAIN=your-auth0-domain.auth0.com
+     VITE_AUTH0_CLIENT_ID=your-client-id
+     VITE_AUTH0_AUDIENCE=your-api-identifier
+     ```
+
+  6. **Configure Auth0:**
+     - In the Auth0 dashboard:
+       - Create a new Single Page Application
+       - Add `http://localhost:5173` to:
+         - Allowed Callback URLs
+         - Allowed Logout URLs
+         - Allowed Web Origins
+       - Under "Advanced Settings" > "Grant Types":
+         - Enable "Implicit"
+         - Set "Token Endpoint Authentication Method" to "None"
+
+  7. **Create Basic Components:**
+     - Create a `components` directory
+     - Add a `Button` component using Shadcn UI
+     - Create a `Navbar` component for authentication
+
+  8. **Set up Auth0 Provider:**
+     - Configure Auth0Provider in App.tsx:
+     ```typescript
+     <Auth0Provider
+       domain={domain}
+       clientId={clientId}
+       authorizationParams={{
+         redirect_uri: origin,
+         response_type: "token id_token",
+         scope: "openid profile email"
+       }}
+     >
+     ```
+
+  9. **Implement Authentication UI:**
+     - Add login/logout functionality to the Navbar
+     - Display user information when logged in
+     - Handle loading and error states
+
+  10. **Testing:**
+      - Test the authentication flow
+      - Verify that login/logout works correctly
+      - Ensure user information is displayed properly
 
 **Task 1.6: Integrating Auth0 in the Frontend**
 
-- **Why we're doing this:** Allows users to log in and securely interact with the backend.
+- **Why we're doing this:** We need to implement user authentication in our frontend application to secure our routes and manage user sessions.
 
 - **Instructions:**
 
-  1. **Install Auth0 React SDK:** Make sure you have auth0-react installed.
-
-  2. **Wrap Your App with Auth0Provider:** In your index.js file, wrap your App component with the Auth0Provider component, providing your Auth0 Domain and Client ID.
-
-  3. **Example Code (index.js):**
-
-     ```javascript
-     import React from 'react';
-     import ReactDOM from 'react-dom/client';
-     import App from './App';
-     import { Auth0Provider } from '@auth0/auth0-react';
-     
-     const root = ReactDOM.createRoot(document.getElementById('root'));
-     root.render(
-       <React.StrictMode>
-         <Auth0Provider
-           domain="YOUR_AUTH0_DOMAIN"
-           clientId="YOUR_AUTH0_CLIENT_ID"
-           redirectUri={window.location.origin}
-         >
-           <App />
-         </Auth0Provider>
-       </React.StrictMode>
-     );
+  1. **Set up Auth0Provider:**
+     - Wrap the application with Auth0Provider in App.tsx
+     - Configure the provider with domain, clientId, and authentication parameters
+     ```typescript
+     <Auth0Provider
+       domain={domain}
+       clientId={clientId}
+       authorizationParams={{
+         redirect_uri: origin,
+         response_type: "token id_token",
+         scope: "openid profile email"
+       }}
+     >
      ```
 
-     content_copydownload
+  2. **Create Authentication Components:**
+     ```typescript
+     // Navbar.tsx
+     export function Navbar() {
+       const { isAuthenticated, loginWithRedirect, logout, user, isLoading } = useAuth0();
 
-     Use code [with caution](https://support.google.com/legal/answer/13505487).JavaScript
+       if (isLoading) {
+         return (
+           // Loading state UI
+         );
+       }
 
-  4. **Implement Login/Logout:** Create components or use the useAuth0 hook to implement login and logout functionality.
+       return (
+         <nav>
+           {isAuthenticated ? (
+             <>
+               <span>Welcome, {user?.name}</span>
+               <Button variant="outline" onClick={() => logout()}>
+                 Log Out
+               </Button>
+             </>
+           ) : (
+             <Button onClick={() => loginWithRedirect()}>
+               Log In
+             </Button>
+           )}
+         </nav>
+       );
+     }
+     ```
+
+  3. **Handle Authentication States:**
+     - Implement loading state display
+     - Show appropriate UI for authenticated and unauthenticated users
+     - Display user information when logged in
+
+  4. **Configure Auth0 Application Settings:**
+     - Application Type: Single Page Application
+     - Token Endpoint Authentication Method: None
+     - Grant Types: Implicit Flow
+     - Add allowed URLs for:
+       - Callbacks
+       - Logouts
+       - Web Origins
+
+  5. **Environment Configuration:**
+     ```
+     # .env
+     VITE_AUTH0_DOMAIN=your-domain.auth0.com
+     VITE_AUTH0_CLIENT_ID=your-client-id
+     VITE_AUTH0_AUDIENCE=your-api-identifier
+     ```
+
+  6. **Testing:**
+     - Verify login flow works correctly
+     - Test logout functionality
+     - Ensure user session persists on page refresh
+     - Validate that protected routes are properly secured
+
+**Status:**
+- Auth0 integration completed
+- Login/logout functionality working
+- User session management implemented
+- Environment configuration set up
+- Auth0 application properly configured
 
 **Task 1.7: Integrating with the ESPN API to Fetch Game Data**
 
