@@ -1,194 +1,276 @@
-# Picus NFL Picks App - Architecture Overview
+- # Picus NFL Picks App - Architecture Overview
 
-## Overview
-The Picus NFL Picks App is a web application that allows users to make predictions about NFL games and compete with friends in private leagues. The application is built using a modern, scalable architecture with clear separation of concerns.
+  This document provides a high-level overview of the Picus NFL Picks app architecture in simple terms.
 
-## Technology Stack
-- **Backend**: .NET 8 Web API
-- **Database**: PostgreSQL
-- **Authentication**: Auth0
-- **Frontend**: React with TypeScript
-- **API Documentation**: Swagger/OpenAPI
-- **Containerization**: Docker
-- **CI/CD**: GitHub Actions
+  ## System Overview
 
-## Project Structure
-```
-backend/
-├── src/
-│   ├── Picus.Api/           # Main API project
-│   ├── Picus.Core/          # Core business logic
-│   └── Picus.Data/          # Data access layer
-├── tests/
-│   ├── Picus.Api.Tests/     # API integration tests
-│   └── Picus.Core.Tests/    # Core unit tests
-└── docs/                    # Documentation
-```
+  Picus is a self-hosted NFL picks application that allows users to make predictions about NFL games. The application consists of:
 
-## Key Components
+  1. A C# Web API Backend: Handles all business logic, data storage, and external API communications
+  2. A React Frontend: Provides an intuitive user interface for making and viewing picks
+  3. A PostgreSQL Database: Stores all our application data
 
-### API Layer (Picus.Api)
-- RESTful endpoints following HTTP standards
-- Controller-based routing
-- Request/Response DTOs
-- Global error handling
-- API versioning
-- Authentication middleware
-- Swagger documentation
+  ## Key Features
 
-### Core Layer (Picus.Core)
-- Business logic
-- Domain models
-- Interfaces
-- Services
-- Validation rules
-- Custom exceptions
+  ### Pick Management
 
-### Data Layer (Picus.Data)
-- Entity Framework Core
-- Repository pattern
-- Database migrations
-- Data seeding
-- Query optimization
+  - Users can make money line picks for upcoming games
+  - Picks are hidden from other users until the game deadline
+  - After deadline, picks are displayed in a table format:
+    - Players' names as column headers
+    - Games listed down the side
+    - Team badges/icons showing each player's pick
+  - Future expansion planned for spread and over/under picks
 
-## Database Schema
+  ### Dashboard
 
-### Users Table
-- Id (Primary Key)
-- Auth0Id (for authentication)
-- Username
-- DisplayName
-- TimeZone
-- IsActive
-- Role (Admin/Player)
-- LeagueId
+  The user dashboard shows:
 
-### Games Table
-- Id (Primary Key)
-- ESPNGameId
-- HomeTeamId
-- AwayTeamId
-- GameTime
-- PickDeadline
-- Week
-- Season
-- IsCompleted
-- IsPlayoffs
-- Location
-- HomeTeamScore
-- AwayTeamScore
-- WinningTeamId (Foreign Key, nullable)
+  - Upcoming games requiring picks
+  - Recent pick results
+  - Performance statistics
+  - League standings
 
-### Teams Table
-- Id (Primary Key)
-- ESPNTeamId
-- Name
-- Abbreviation
-- City
-- IconUrl
-- BannerUrl
-- PrimaryColor
-- SecondaryColor
-- TertiaryColor
-- Conference (AFC/NFC)
-- Division (North/South/East/West)
+  ## Technology Stack
 
-### Picks Table
-- Id (Primary Key)
-- UserId (Foreign Key)
-- GameId (Foreign Key)
-- SelectedTeamId (Foreign Key)
-- IsCorrect
-- Points
+  ### Backend
 
-### Leagues Table
-- Id (Primary Key)
-- Name
-- AdminUserId (Foreign Key)
+  - C# with .NET Core Web API
+  - Entity Framework Core for database access
+  - LINQ for querying data
+  - Auth0 for authentication
 
-## Authentication & Authorization
-- Auth0 integration for secure user authentication
-- JWT token validation
-- Role-based access control (Admin/Player)
-- Secure password handling
+  ### Frontend
 
-## API Endpoints
+  - React for the user interface
+  - Auth0 React SDK for authentication
+  - **Shadcn UI** for UI elements
 
-### Authentication
-- POST /api/auth/login
-- POST /api/auth/logout
-- GET /api/auth/profile
+  ### Database
 
-### Users
-- GET /api/users
-- GET /api/users/{id}
-- PUT /api/users/{id}
-- DELETE /api/users/{id}
+  - PostgreSQL for data storage
+  - Structured to support:
+    - User data and authentication
+    - Game schedules and results
+    - Player picks and deadlines
+    - League information
 
-### Games
-- GET /api/games
-- GET /api/games/{id}
-- POST /api/games
-- PUT /api/games/{id}
-- DELETE /api/games/{id}
+  ## Application Structure
 
-### Picks
-- GET /api/picks
-- GET /api/picks/{id}
-- POST /api/picks
-- PUT /api/picks/{id}
-- DELETE /api/picks/{id}
+  Our application follows a simplified clean architecture with three main parts:
 
-### Leagues
-- GET /api/leagues
-- GET /api/leagues/{id}
-- POST /api/leagues
-- PUT /api/leagues/{id}
-- DELETE /api/leagues/{id}
+  ### 1. API Layer (Controllers)
 
-## Error Handling
-- Standardized error responses
-- HTTP status codes
-- Detailed error messages (development only)
-- Error logging
+  Responsibilities:
 
-## Caching Strategy
-- In-memory caching for frequently accessed data
-- Redis for distributed caching (future)
-- Cache invalidation rules
+  - Handle HTTP requests
+  - Validate incoming data
+  - Route requests to appropriate services
+  - Format responses
+  - Implement global exception handling to return consistent error responses.
+  - Log all incoming requests and outgoing responses for debugging and monitoring.
+  - Implement integration tests to ensure controllers correctly interact with services.
 
-## Monitoring & Logging
-- Application metrics
-- Performance monitoring
-- Error tracking
-- Audit logging
-- Health checks
+  Example Controller Structure:
 
-## Security Measures
-- HTTPS enforcement
-- CORS policy
-- Input validation
-- SQL injection prevention
-- XSS protection
-- Rate limiting
+  ```
+  public class PicksController : ControllerBase
+  {
+      private readonly IPickService _pickService;
+  
+      // Handle getting picks
+      [HttpGet]
+      public async Task<IActionResult> GetPicks(int weekId)
+      {
+          try
+          {
+              // ... logic ...
+          }
+          catch (Exception ex)
+          {
+              // Log the error
+              return StatusCode(StatusCodes.Status500InternalServerError, "Error getting picks.");
+          }
+      }
+  
+      // Handle submitting picks
+      [HttpPost]
+      public async Task<IActionResult> SubmitPicks(PickSubmissionDto picks)
+      {
+          // ... logic ...
+      }
+  }
+  ```
 
-## Deployment
-- Docker containerization
-- Environment-specific configurations
-- Database migrations
-- Zero-downtime updates
-- Backup strategy
+  content_copydownload
 
-## Testing Strategy
-- Unit tests
-- Integration tests
-- API tests
-- Load tests
-- Security tests
+  Use code [with caution](https://support.google.com/legal/answer/13505487).C#
 
-## Future Enhancements
-- Real-time updates
-- Mobile app
-- Advanced statistics
-- Social features
-- Machine learning predictions
+  ### 2. Service Layer
+
+  Responsibilities:
+
+  - Implement business logic
+  - Enforce pick deadlines
+  - Calculate standings
+  - Manage data access
+  - Implement unit tests for core business logic and calculations.
+  - Implement robust error handling within service methods, potentially throwing custom exceptions for specific scenarios.
+  - Log significant events and errors within service methods.
+
+  Example Service Structure:
+
+  ```
+  public class PickService
+  {
+      private readonly ApplicationDbContext _context;
+  
+      // Business logic for submitting picks
+      public async Task<Result> SubmitPicks(int userId, List<Pick> picks)
+      {
+          try
+          {
+              // Validate deadline
+              // Save picks
+              // Return result
+          }
+          catch (Exception ex)
+          {
+              // Log the error
+              throw new PickSubmissionException("Error submitting picks.", ex);
+          }
+      }
+  }
+  ```
+
+  content_copydownload
+
+  Use code [with caution](https://support.google.com/legal/answer/13505487).C#
+
+  ### 3. Data Access Layer
+
+  Responsibilities:
+
+  - Define database structure
+  - Handle data operations
+  - Manage relationships between entities
+  - Implement integration tests to ensure correct interaction with the database.
+  - Abstract database interactions to allow for potential future changes in data storage.
+
+  Example Entity Structure:
+
+  ```
+  public class Pick
+  {
+      public int Id { get; set; }
+      public int UserId { get; set; }
+      public int GameId { get; set; }
+      public int TeamId { get; set; }
+      public DateTime SubmittedAt { get; set; }
+  }
+  ```
+
+  content_copydownload
+
+  Use code [with caution](https://support.google.com/legal/answer/13505487).C#
+
+  ### Testing Strategy
+
+  Our testing strategy will encompass three key types of tests:
+
+  - **Unit Tests:** Focused on testing individual components, particularly within the Service Layer, to ensure business logic is correct and isolated.
+  - **Integration Tests:** Focused on testing the interaction between different layers, such as Controllers interacting with Services and Services interacting with the Data Access Layer. This ensures that the components work correctly together.
+  - **End-to-End Tests:** Focused on testing the complete flow of the application, simulating user interactions from the frontend through the backend and database. This verifies the overall functionality and user experience.
+
+  ## Database Schema
+
+  ### Users Table
+
+  - Id (Primary Key)
+  - Auth0Id (for authentication)
+  - Username
+  - Role (Admin/Player)
+  - LeagueId
+  - **Timezone** (String, to store the user's preferred timezone for displaying game times)
+
+  ### Games Table
+
+  - Id (Primary Key)
+  - ESPNGameId (String, to store the unique identifier from the ESPN API)
+  - HomeTeamId (Foreign Key)
+  - AwayTeamId (Foreign Key)
+  - GameTime (DateTime, storing the scheduled game time in UTC)
+  - PickDeadline (DateTime, storing the pick submission deadline in UTC)
+  - FinalScore (String, to store the final score, e.g., "24-17")
+  - Week (Integer)
+  - Season (Integer)
+  - **Status** (String, e.g., "Scheduled", "InProgress", "Final")
+  - **UNIQUE (ESPNGameId)** *(Adding a constraint to prevent duplicate games)*
+
+  ### Picks Table
+
+  - Id (Primary Key)
+  - UserId (Foreign Key)
+  - GameId (Foreign Key)
+  - SelectedTeamId (Foreign Key)
+  - SubmissionTime (DateTime)
+  - IsCorrect (Boolean)
+  - Points (Integer)
+  - **INDEX (UserId, GameId)** *(Adding an index for faster lookups)*
+
+  ### Leagues Table
+
+  - Id (Primary Key)
+  - Name (String)
+  - CreatedAt (DateTime)
+  - AdminUserId (Foreign Key)
+  - **Description** (String, optional description of the league)
+
+  ### Teams Table
+
+  - Id (Primary Key)
+  - ESPNTeamId (String)
+  - Name (String)
+  - Abbreviation (String)
+  - IconUrl (String)
+
+  ## Security Considerations
+
+  ### Pick Visibility
+
+  - Database queries filter picks based on game deadlines
+  - API endpoints enforce visibility rules
+  - Frontend respects these restrictions in the UI
+
+  ### Authentication
+
+  - Auth0 handles user authentication
+  - JWT tokens secure API requests
+  - Role-based access controls protect admin functions
+
+  ## Deployment
+
+  The application will be deployed using a CI/CD pipeline from GitHub to **Render.com**. This will involve:
+
+  - Committing code changes to a GitHub repository.
+  - Render.com automatically building and deploying the backend and frontend applications based on configuration files in the repository.
+
+  ## Future Expansion Considerations
+
+  The schema and architecture support future additions:
+
+  - Spread betting
+  - Over/under predictions
+  - Historical statistics
+  - Additional league features
+
+  **Consideration for Real-time Updates:** While not in the initial scope, for easier implementation of real-time features in the future (like live score updates or immediate pick visibility changes), it's beneficial to choose backend technologies and patterns that lend themselves to real-time communication. This might involve using technologies or libraries that support WebSockets or Server-Sent Events (SSE) for future communication between the backend and frontend. Even if not actively used initially, the underlying infrastructure and architectural choices can be made with this in mind.
+
+  **ESPN API Integration:** The backend will need to integrate with the ESPN API to retrieve and store game data. This will likely involve:
+
+  - A dedicated service (e.g., GameDataService) responsible for fetching data from the ESPN API.
+  - Scheduled tasks or a manual admin trigger to periodically synchronize game data.
+  - Mapping the ESPN API response to our Games entity.
+  - Error handling and logging for API communication issues.
+
+  However, we're keeping the initial implementation focused on core features to maintain clarity and ease of understanding.
