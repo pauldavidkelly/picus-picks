@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Picus.Api.Data;
+using Picus.Api.Services;
 
 namespace Picus.Api.Controllers
 {
@@ -8,18 +7,29 @@ namespace Picus.Api.Controllers
     [Route("[controller]")]
     public class TeamsController : ControllerBase
     {
-        private readonly PicusDbContext _context;
+        private readonly ITeamService _teamService;
 
-        public TeamsController(PicusDbContext context)
+        public TeamsController(ITeamService teamService)
         {
-            _context = context;
+            _teamService = teamService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetTeams()
         {
-            var teams = await _context.Teams.ToListAsync();
-            return Ok(new { Count = teams.Count, Teams = teams });
+            var teams = await _teamService.GetAllTeamsAsync();
+            return Ok(teams);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetTeam(int id)
+        {
+            var team = await _teamService.GetTeamByIdAsync(id);
+            if (team == null)
+            {
+                return NotFound();
+            }
+            return Ok(team);
         }
     }
 }
