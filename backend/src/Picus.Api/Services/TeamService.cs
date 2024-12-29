@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Picus.Api.Data;
 using Picus.Api.Models;
 using Picus.Api.Models.DTOs;
+using Picus.Api.Models.Enums;
 
 namespace Picus.Api.Services;
 
@@ -9,6 +10,7 @@ public interface ITeamService
 {
     Task<TeamDTO?> GetTeamByIdAsync(int id);
     Task<IEnumerable<TeamDTO>> GetAllTeamsAsync();
+    Task<IEnumerable<TeamDTO>> GetTeamsByConferenceAndDivisionAsync(ConferenceType conference, DivisionType division);
 }
 
 public class TeamService : ITeamService
@@ -38,6 +40,17 @@ public class TeamService : ITeamService
             .OrderBy(t => t.Conference)
             .ThenBy(t => t.Division)
             .ThenBy(t => t.City)
+            .ToListAsync();
+
+        return teams.Select(MapToDTO);
+    }
+
+    public async Task<IEnumerable<TeamDTO>> GetTeamsByConferenceAndDivisionAsync(ConferenceType conference, DivisionType division)
+    {
+        var teams = await _dbContext.Teams
+            .AsNoTracking()
+            .Where(t => t.Conference == conference && t.Division == division)
+            .OrderBy(t => t.City)
             .ToListAsync();
 
         return teams.Select(MapToDTO);

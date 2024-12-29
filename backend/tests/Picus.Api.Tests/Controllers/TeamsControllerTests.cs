@@ -106,4 +106,51 @@ public class TeamsControllerTests
         Assert.Equal(teams[0].Id, returnedTeams[0].Id);
         Assert.Equal(teams[1].Id, returnedTeams[1].Id);
     }
+
+    [Fact]
+    public async Task GetTeamsByConferenceAndDivision_ReturnsOkResultWithTeams()
+    {
+        // Arrange
+        var conference = ConferenceType.AFC;
+        var division = DivisionType.North;
+        var teams = new List<TeamDTO>
+        {
+            new()
+            {
+                Id = 1,
+                Name = "Team 1",
+                Abbreviation = "T1",
+                City = "City 1",
+                Conference = conference,
+                Division = division
+            },
+            new()
+            {
+                Id = 2,
+                Name = "Team 2",
+                Abbreviation = "T2",
+                City = "City 2",
+                Conference = conference,
+                Division = division
+            }
+        };
+
+        _mockTeamService.Setup(s => s.GetTeamsByConferenceAndDivisionAsync(conference, division))
+            .ReturnsAsync(teams);
+
+        // Act
+        var result = await _controller.GetTeamsByConferenceAndDivision(conference, division);
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var returnedTeams = Assert.IsType<List<TeamDTO>>(okResult.Value);
+        Assert.Equal(2, returnedTeams.Count);
+        Assert.All(returnedTeams, team => 
+        {
+            Assert.Equal(conference, team.Conference);
+            Assert.Equal(division, team.Division);
+        });
+        Assert.Equal(teams[0].Id, returnedTeams[0].Id);
+        Assert.Equal(teams[1].Id, returnedTeams[1].Id);
+    }
 }

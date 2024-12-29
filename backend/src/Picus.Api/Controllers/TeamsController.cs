@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Picus.Api.Models.Enums;
 using Picus.Api.Services;
 
 namespace Picus.Api.Controllers
@@ -30,6 +31,13 @@ namespace Picus.Api.Controllers
                 return NotFound();
             }
             return Ok(team);
+        }
+
+        [HttpGet("{conference}/{division}")]
+        public async Task<IActionResult> GetTeamsByConferenceAndDivision(ConferenceType conference, DivisionType division)
+        {
+            var teams = await _teamService.GetTeamsByConferenceAndDivisionAsync(conference, division);
+            return Ok(teams);
         }
     }
 }
