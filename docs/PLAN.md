@@ -57,17 +57,21 @@ Now we'll implement security features. This is like installing locks and securit
 
 This phase focuses on NFL game data management. This is our core content management system - it's where we handle all game-related information.
 
-1. ESPN API Integration
-   - Create robust ESPN API service
+1. **TheSportsDB API Integration**
+   - Create robust TheSportsDB API service
    - Add efficient game data fetching
    - Implement smart data caching
    - Write comprehensive integration tests
+   - Handle preseason game filtering
+   - Implement proper playoff game detection
 
 2. Game Management Features
    - Create admin controls for game synchronization
    - Add game listing endpoints with proper filtering
    - Implement automatic game status updates
    - Test game management workflows
+   - Ensure proper timezone handling
+   - Validate score updates for completed games
 
 ## Phase 5: Pick Management (3-4 days)
 
