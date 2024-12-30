@@ -1,6 +1,14 @@
 // API configuration
+declare global {
+    interface Window {
+        env?: {
+            REACT_APP_API_BASE_URL?: string;
+        };
+    }
+}
+
 export const API_CONFIG = {
-    BASE_URL: process.env.REACT_APP_API_BASE_URL || '',
+    BASE_URL: window.env?.REACT_APP_API_BASE_URL || '',
     ENDPOINTS: {
         GAMES: {
             BY_WEEK_AND_SEASON: (week: number, season: number) => 

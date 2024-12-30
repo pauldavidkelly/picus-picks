@@ -7,16 +7,24 @@ import { ConferenceType, DivisionType, GameDTO, TeamDTO } from '../types/game';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
+// Mock window.env
+window.env = {
+    REACT_APP_API_BASE_URL: 'http://test-api.example.com'
+};
+
 // Mock localStorage
 const mockGetItem = jest.fn();
-global.localStorage = {
-    getItem: mockGetItem,
-    setItem: jest.fn(),
-    removeItem: jest.fn(),
-    clear: jest.fn(),
-    length: 0,
-    key: jest.fn(),
-};
+Object.defineProperty(window, 'localStorage', {
+    value: {
+        getItem: mockGetItem,
+        setItem: jest.fn(),
+        removeItem: jest.fn(),
+        clear: jest.fn(),
+        length: 0,
+        key: jest.fn(),
+    },
+    writable: true
+});
 
 describe('gameService', () => {
     const mockToken = 'mock-token';
