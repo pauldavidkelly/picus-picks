@@ -141,7 +141,7 @@ Here's a breakdown into smaller tasks:
      // Configure Auth0 Settings
      var auth0Settings = builder.Configuration.GetSection("Auth0").Get<Auth0Settings>();
      builder.Services.Configure<Auth0Settings>(builder.Configuration.GetSection("Auth0"));
-
+     
      // Configure JWT Authentication
      builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
          .AddJwtBearer(options =>
@@ -170,7 +170,7 @@ Here's a breakdown into smaller tasks:
              Type = SecuritySchemeType.ApiKey,
              Scheme = "Bearer"
          });
-
+     
          c.AddSecurityRequirement(new OpenApiSecurityRequirement
          {
              {
@@ -301,114 +301,210 @@ Here's a breakdown into smaller tasks:
 
   4. **Implement Login/Logout:** Create components or use the useAuth0 hook to implement login and logout functionality.
 
-**Task 1.7: Integrating with the ESPN API to Fetch Game Data**
+- 1. **Task 1.7: Integrating with TheSportsDB API to Fetch Game Data**
 
-- **Why we're doing this:** This is crucial to get the actual schedule of NFL games into our application.
+     **Current Implementation with TheSportsDB API**
 
-- **Instructions:**
+     - **Why we're doing this:** This is crucial to get the actual schedule of NFL games into our application. We've chosen TheSportsDB API as it provides reliable NFL game data with a straightforward API structure.
 
-  1. **Identify the ESPN API Endpoint:** Research and identify the correct ESPN API endpoint to retrieve NFL game schedules. ESPN has various APIs, so ensure you find the one that suits your needs. Look for documentation on sports APIs or specifically the ESPN API.
+     - **Instructions:**
 
-  2. **Create a GameDataService:** In your backend Services folder, create a GameDataService. This service will be responsible for communicating with the ESPN API.
+       1. **Set up TheSportsDB API Access:**
 
-  3. **Install HttpClient:** You'll use HttpClient to make HTTP requests to the ESPN API. This is built into .NET.
+          - Sign up for an API key at TheSportsDB.com
+          - Add the API configuration to your appsettings.json:
 
-  4. **Implement Fetching Logic:** In the GameDataService, implement a method (e.g., FetchGamesFromEspnApi) to:
+          ```json
+          {
+            "SportsDbApi": {
+              "Url": "https://www.thesportsdb.com/api/v1/json/[your-key]",
+              "ApiKey": "[your-api-key]"
+            }
+          }
+          ```
 
-     - Create an HttpClient instance.
-     - Make a GET request to the ESPN API endpoint.
-     - Handle potential errors during the API call (e.g., network issues, API errors).
-     - Deserialize the JSON response from the ESPN API. You'll likely need to create C# classes that match the structure of the ESPN API response to deserialize into.
+       2. **Create Models for TheSportsDB Response:**
 
-  5. **Map ESPN Data to Our Game Model:** Create logic within the FetchGamesFromEspnApi method (or a separate helper method) to map the data from the ESPN API response to your Game entity model. Pay attention to data type conversions and potential differences in field names. You'll need to retrieve the Team IDs from your database based on the team names or IDs provided by the ESPN API.
+          - In the Models/SportsDb folder, create the necessary model classes to match the API response structure:
 
-  6. **Example Code (GameDataService.cs - simplified):**
+          ```csharp
+          public class Game
+          {
+              [JsonPropertyName("idEvent")]
+              public string Id { get; set; } = string.Empty;
+          
+              [JsonPropertyName("strEvent")]
+              public string Name { get; set; } = string.Empty;
+          
+              [JsonPropertyName("dateEvent")]
+              public string Date { get; set; } = string.Empty;
+          
+              [JsonPropertyName("strTime")]
+              public string Time { get; set; } = string.Empty;
+          
+              [JsonPropertyName("idHomeTeam")]
+              public string HomeTeamId { get; set; } = string.Empty;
+          
+              [JsonPropertyName("idAwayTeam")]
+              public string AwayTeamId { get; set; } = string.Empty;
+          
+              // Additional properties...
+          }
+          ```
 
-     ```csharp
-     using System.Net.Http;
-     using System.Text.Json;
-     using System.Threading.Tasks;
-     using Microsoft.EntityFrameworkCore;
-     
-     public class GameDataService
-     {
-         private readonly HttpClient _httpClient;
-         private readonly ApplicationDbContext _context;
-     
-         public GameDataService(HttpClient httpClient, ApplicationDbContext context)
-         {
-             _httpClient = httpClient;
-             _context = context;
-         }
-     
-         public async Task<List<Game>> FetchGamesFromEspnApi()
-         {
-             // Replace with the actual ESPN API endpoint
-             string apiUrl = "https://api.example-espn.com/nfl/scoreboard";
-     
-             try
-             {
-                 var response = await _httpClient.GetAsync(apiUrl);
-                 response.EnsureSuccessStatusCode(); // Throw exception if not successful
-     
-                 var json = await response.Content.ReadAsStringAsync();
-     
-                 // Assuming you create a class 'EspnScoreboardResponse' to match the API structure
-                 var espnResponse = JsonSerializer.Deserialize<EspnScoreboardResponse>(json);
-     
-                 if (espnResponse?.Events != null)
-                 {
-                     var games = new List<Game>();
-                     foreach (var espnEvent in espnResponse.Events)
-                     {
-                         // Map ESPN data to your Game model
-                         var homeTeam = await _context.Teams.FirstOrDefaultAsync(t => t.Name == espnEvent.Competitions[0].Competitors.FirstOrDefault(c => c.HomeAway == "home")?.Team.Name);
-                         var awayTeam = await _context.Teams.FirstOrDefaultAsync(t => t.Name == espnEvent.Competitions[0].Competitors.FirstOrDefault(c => c.HomeAway == "away")?.Team.Name);
-     
-                         if (homeTeam != null && awayTeam != null)
-                         {
-                             games.Add(new Game
-                             {
-                                 ESPNGameId = espnEvent.Id,
-                                 HomeTeamId = homeTeam.Id,
-                                 AwayTeamId = awayTeam.Id,
-                                 GameTime = DateTime.Parse(espnEvent.Date), // You might need to adjust the parsing
-                                 PickDeadline = DateTime.Parse(espnEvent.Date).AddHours(-1) // Example deadline
-                                 // ... map other properties ...
-                             });
-                         }
-                     }
-                     return games;
-                 }
-                 return new List<Game>();
-             }
-             catch (HttpRequestException ex)
-             {
-                 // Log the error
-                 return null;
-             }
-             catch (JsonException ex)
-             {
-                 // Log the error
-                 return null;
-             }
-         }
-     }
-     ```
+       3. **Create ISportsDbService Interface:**
 
-     content_copydownload
+          ```csharp
+          public interface ISportsDbService
+          {
+              Task<List<Models.SportsDb.Game>> GetLeagueScheduleAsync(int leagueId, int season);
+          }
+          ```
 
-     Use code [with caution](https://support.google.com/legal/answer/13505487).C#
+       4. **Implement SportsDbService:**
 
-  7. **Register HttpClient and GameDataService:** In your Startup.cs, register HttpClient as a service and your GameDataService.
+          ```csharp
+          public class SportsDbService : ISportsDbService
+          {
+              private readonly HttpClient _httpClient;
+              private readonly string _baseUrl;
+          
+              public SportsDbService(HttpClient httpClient, IConfiguration configuration)
+              {
+                  _httpClient = httpClient;
+                  _baseUrl = configuration.GetSection("SportsDbApi").GetValue<string>("Url");
+                  _httpClient.DefaultRequestHeaders.Add("X-API-KEY", 
+                      configuration.GetSection("SportsDbApi").GetValue<string>("ApiKey"));
+              }
+          
+              public async Task<List<Game>> GetLeagueScheduleAsync(int leagueId, int season)
+              {
+                  try
+                  {
+                      string url = $"{_baseUrl}/schedule/league/{leagueId}/{season}";
+                      var response = await _httpClient.GetAsync(url);
+                      response.EnsureSuccessStatusCode();
+          
+                      var content = await response.Content.ReadAsStringAsync();
+                      var schedule = JsonSerializer.Deserialize<GameSchedule>(content, 
+                          new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+          
+                      return schedule?.Schedule ?? new List<Game>();
+                  }
+                  catch (Exception ex)
+                  {
+                      throw new SportsDbException("Failed to retrieve league schedule", ex);
+                  }
+              }
+          }
+          ```
 
-  8. **Periodically Sync Games (Initial Implementation):** For this initial phase, you can implement a simple way to trigger the ESPN API sync. This could be:
+       5. **Create GameMapper for Data Transformation:**
 
-     - 
-     - **A manual action in a controller:** Create an API endpoint that, when called, executes the FetchGamesFromEspnApi method and saves the new games to the database. This is good for initial setup and testing.
-     - **A scheduled task (more robust):** Use a library like Hangfire or implement a simple BackgroundService to periodically call the FetchGamesFromEspnApi method. This is a better long-term solution but might be slightly more complex for a junior developer initially. Start with the manual trigger if needed.
+          ```csharp
+          public static class GameMapper
+          {
+              public static Models.Game ToGameEntity(this Models.SportsDb.Game sportsDbGame)
+              {
+                  var gameTime = ParseGameDateTime(sportsDbGame.Date, sportsDbGame.Time);
+                  var week = ParseWeek(sportsDbGame.IntRound);
+                  
+                  return new Models.Game
+                  {
+                      ExternalGameId = sportsDbGame.Id,
+                      GameTime = gameTime,
+                      PickDeadline = gameTime,
+                      Location = sportsDbGame.StrVenue ?? string.Empty,
+                      HomeTeamScore = ParseScore(sportsDbGame.HomeScore),
+                      AwayTeamScore = ParseScore(sportsDbGame.AwayScore),
+                      IsCompleted = sportsDbGame.HomeScore != null && sportsDbGame.AwayScore != null,
+                      Week = week,
+                      IsPlayoffs = DetermineIfPlayoffs(week),
+                      Season = DetermineSeason(gameTime)
+                  };
+              }
+          
+              // Helper methods for parsing and data conversion...
+          }
+          ```
 
-  9. **Save Games to the Database:** Once you fetch and map the game data, use your ApplicationDbContext to add the new Game entities to the database. Be mindful of potential duplicates (you can check if a game with the same ESPNGameId already exists).
+       6. **Implement Game Service for Data Synchronization:**
+
+          ```csharp
+          public class GameService : IGameService
+          {
+              private readonly IRepository<Game> _gameRepository;
+              private readonly ISportsDbService _sportsDbService;
+              private readonly PicusDbContext _dbContext;
+          
+              public async Task<IEnumerable<Game>> UpsertGamesForSeasonAsync(int leagueId, int season)
+              {
+                  var sportsDbGames = await _sportsDbService.GetLeagueScheduleAsync(leagueId, season);
+                  
+                  // Filter out preseason games
+                  sportsDbGames = sportsDbGames.Where(g => GameMapper.ParseWeek(g.IntRound) != 500).ToList();
+          
+                  var upsertedGames = new List<Game>();
+          
+                  foreach (var sportsDbGame in sportsDbGames)
+                  {
+                      // Map and upsert game data...
+                  }
+          
+                  return upsertedGames;
+              }
+          }
+          ```
+
+       7. **Error Handling:**
+
+          - Create a custom exception class for TheSportsDB API errors:
+
+          ```csharp
+          public class SportsDbException : Exception
+          {
+              public SportsDbException(string message, Exception innerException) 
+                  : base(message, innerException)
+              {
+              }
+          }
+          ```
+
+       8. **Register Services:**
+          In Program.cs or where you configure services:
+
+          ```csharp
+          builder.Services.AddHttpClient<ISportsDbService, SportsDbService>();
+          builder.Services.AddScoped<IGameService, GameService>();
+          ```
+
+     **Key Features of Current Implementation:**
+
+     1. **Robust Error Handling:** Custom exceptions and proper error propagation
+     2. **Data Mapping:** Comprehensive mapping from TheSportsDB model to our domain model
+     3. **Week Calculation:** Proper handling of NFL week numbers and season determination
+     4. **Score Handling:** Null-safe parsing of game scores
+     5. **Preseason Filtering:** Automatic filtering of preseason games
+     6. **Upsert Logic:** Smart update/insert logic to handle both new games and updates
+
+     **Testing Considerations:**
+
+     1. Write unit tests for:
+        - GameMapper functions
+        - SportsDbService error handling
+        - Game update/insert logic
+
+     2. Write integration tests for:
+        - TheSportsDB API communication
+        - Complete game synchronization process
+
+     3. Manual testing cases:
+        - Verify correct week number calculation
+        - Check proper handling of completed games
+        - Validate proper timezone handling
+        - Confirm proper handling of playoff games
+
+     The implementation provides a robust foundation for fetching and maintaining NFL game data, with proper error handling and data validation throughout the process.
 
 - 1. **Task 1.8: Creating the Game Listing API Endpoint**
 
