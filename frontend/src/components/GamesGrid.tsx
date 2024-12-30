@@ -29,7 +29,11 @@ export const GamesGrid = ({ week, season, className = '' }: GamesGridProps) => {
             try {
                 const fetchedGames = await gameService.getGamesByWeekAndSeason(week, season);
                 if (mounted) {
-                    setGames(fetchedGames);
+                    // Sort games by date/time
+                    const sortedGames = [...fetchedGames].sort((a, b) => 
+                        new Date(a.gameTime).getTime() - new Date(b.gameTime).getTime()
+                    );
+                    setGames(sortedGames);
                 }
             } catch (err) {
                 if (mounted) {
@@ -52,9 +56,9 @@ export const GamesGrid = ({ week, season, className = '' }: GamesGridProps) => {
 
     if (loading) {
         return (
-            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ${className}`}>
+            <div className="space-y-4">
                 {[...Array(6)].map((_, index) => (
-                    <Skeleton key={index} className="h-32 w-full" />
+                    <Skeleton key={index} className="h-24 w-full" />
                 ))}
             </div>
         );
@@ -77,7 +81,7 @@ export const GamesGrid = ({ week, season, className = '' }: GamesGridProps) => {
     }
 
     return (
-        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ${className}`}>
+        <div className={`space-y-4 ${className}`}>
             {games.map((game) => (
                 <GameCard key={game.id} game={game} />
             ))}

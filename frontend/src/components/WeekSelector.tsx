@@ -19,10 +19,10 @@ export const WeekSelector: React.FC<WeekSelectorProps> = ({ selectedWeek, onChan
             value={selectedWeek.toString()} 
             onValueChange={(value) => onChange(Number(value))}
         >
-            <SelectTrigger className="w-[180px]" data-testid="week-selector">
+            <SelectTrigger className="w-[180px] bg-white dark:bg-gray-800" data-testid="week-selector">
                 <SelectValue>Week {selectedWeek}</SelectValue>
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white dark:bg-gray-800">
                 {weeks.map((week) => (
                     <SelectItem 
                         key={week} 
