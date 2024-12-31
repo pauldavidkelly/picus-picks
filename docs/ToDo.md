@@ -26,10 +26,15 @@
 - [x] Fix issue with API not being picked up correctly from .env
 - [x] Talk to Claude to produce docs
   - [x] Flesh out Task 1.10
-- [ ] Implement Picks
+- [x] Implement Picks
   - [ ] Frontend
+    - [ ] Build issues
+    - [ ] Tests are missing
+    - [ ] Tests broken
+    - [ ] Try it in cursor to see if it can fix it.
   - [ ] Backend
-
+    - [ ] Add DI for picks service
+  
 - [ ] Talk to Claude about team display
   - [ ] Add links to all teams in lists to team page
   - [ ] Add navigation

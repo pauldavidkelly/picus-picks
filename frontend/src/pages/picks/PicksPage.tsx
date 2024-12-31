@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 import { GameCard } from '@/components/picks/GameCard';
 import { PicksGrid } from '@/components/picks/PicksGrid';
 import { PicksStatus } from '@/components/picks/PicksStatus';
@@ -21,6 +22,7 @@ export const PicksPage = () => {
     const weekNum = week ? parseInt(week) : undefined;
     const seasonNum = season ? parseInt(season) : undefined;
     const gameService = useGameService();
+    const { getAccessTokenSilently } = useAuth0();
 
     useEffect(() => {
         const loadData = async () => {
@@ -31,19 +33,20 @@ export const PicksPage = () => {
                 }
                 
                 setIsLoading(true);
+                const token = await getAccessTokenSilently();
                 
                 // Load games for the week
                 const gamesData = await gameService.getGamesByWeekAndSeason(weekNum, seasonNum);
                 setGames(gamesData);
 
                 // Load user's picks and status
-                const { picks, status } = await picksService.getMyPicks(weekNum, seasonNum);
+                const { picks, status } = await picksService.getMyPicks(weekNum, seasonNum, token);
                 setMyPicks(picks);
                 setPicksStatus(status);
 
                 // Load league picks
                 const leagueId = 1; // TODO: Get from user context
-                const leaguePicksData = await picksService.getLeaguePicks(leagueId, weekNum, seasonNum);
+                const leaguePicksData = await picksService.getLeaguePicks(leagueId, weekNum, seasonNum, token);
                 setLeaguePicks(leaguePicksData);
             } catch (error) {
                 console.error('Error loading picks data:', error);
@@ -54,16 +57,28 @@ export const PicksPage = () => {
         };
 
         loadData();
-    }, [weekNum, seasonNum]);
+    }, [weekNum, seasonNum, getAccessTokenSilently]);
 
-    const handlePickSubmit = (pick: Pick) => {
-        setMyPicks(prev => {
-            const index = prev.findIndex(p => p.gameId === pick.gameId);
-            if (index >= 0) {
-                return [...prev.slice(0, index), pick, ...prev.slice(index + 1)];
-            }
-            return [...prev, pick];
-        });
+    const handlePickSubmit = async (pick: Pick) => {
+        try {
+            const token = await getAccessTokenSilently();
+            const submittedPick = await picksService.submitPick({
+                gameId: pick.gameId,
+                selectedTeamId: pick.selectedTeamId,
+                notes: pick.notes
+            }, token);
+            
+            setMyPicks(prev => {
+                const index = prev.findIndex(p => p.gameId === submittedPick.gameId);
+                if (index >= 0) {
+                    return [...prev.slice(0, index), submittedPick, ...prev.slice(index + 1)];
+                }
+                return [...prev, submittedPick];
+            });
+        } catch (error) {
+            console.error('Error submitting pick:', error);
+            toast.error('Failed to submit pick');
+        }
     };
 
     if (isLoading) {

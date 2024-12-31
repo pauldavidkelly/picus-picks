@@ -4,13 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { GameDTO, TeamDTO } from '@/types/game';
 import { Pick } from '@/types/picks';
-import { picksService } from '@/services/picksService';
 import { toast } from 'sonner';
 
 interface GameCardProps {
     game: GameDTO;
     userPick?: Pick;
-    onPickSubmit: (pick: Pick) => void;
+    onPickSubmit: (pick: Pick) => Promise<void>;
 }
 
 export const GameCard = ({ game, userPick, onPickSubmit }: GameCardProps) => {
@@ -31,12 +30,11 @@ export const GameCard = ({ game, userPick, onPickSubmit }: GameCardProps) => {
 
         try {
             setIsSubmitting(true);
-            const pick = await picksService.submitPick({
+            await onPickSubmit({
                 gameId: game.id,
                 selectedTeamId,
                 notes: notes.trim() || undefined
             });
-            onPickSubmit(pick);
             toast.success('Pick submitted successfully');
         } catch (error) {
             toast.error('Failed to submit pick');
