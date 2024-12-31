@@ -1,5 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
 
 export function Navbar() {
   const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
@@ -7,13 +8,23 @@ export function Navbar() {
   return (
     <nav className="border-b">
       <div className="container mx-auto px-4 py-2 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <h1 className="text-xl font-bold">Picus NFL Picks</h1>
+        <div className="flex items-center space-x-6">
+          <Link to="/" className="text-xl font-bold hover:text-primary">
+            Picus NFL Picks
+          </Link>
+          {isAuthenticated && (
+            <Link 
+              to="/games" 
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
+              Games
+            </Link>
+          )}
         </div>
         <div className="flex items-center space-x-4">
           {isAuthenticated ? (
             <>
-              <span>Welcome, {user?.name}</span>
+              <span className="text-sm">Welcome, {user?.name}</span>
               <Button
                 variant="outline"
                 onClick={() =>

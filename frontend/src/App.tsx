@@ -5,6 +5,7 @@ import './App.css'
 import { Auth0Provider } from "@auth0/auth0-react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
+import { GamesPage } from './pages/GamesPage';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -48,6 +49,7 @@ function App() {
                   <div>Welcome to Picus NFL Picks!</div>
                 </>
               } />
+              <Route path="/games" element={<GamesPage />} />
             </Routes>
           </main>
         </div>
