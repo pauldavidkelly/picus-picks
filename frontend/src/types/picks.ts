@@ -1,6 +1,6 @@
 export interface Pick {
     id: number;
-    userId: number;
+    userId: string;
     gameId: number;
     selectedTeamId: number;
     submissionTime: string;
@@ -10,7 +10,7 @@ export interface Pick {
 }
 
 export interface VisiblePick {
-    userId: number;
+    userId: string;
     gameId: number;
     selectedTeamId?: number;
     hasPick: boolean;
@@ -35,7 +35,7 @@ export interface LeaguePicks {
 }
 
 export interface UserPicks {
-    userId: number;
+    userId: string;
     userName: string;
     picks: VisiblePick[];
 }

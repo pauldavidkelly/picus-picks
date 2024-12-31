@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { GameDTO, TeamDTO } from '@/types/game';
 import { Pick } from '@/types/picks';
 import { toast } from 'sonner';
+import { useAuth0 } from '@auth0/auth0-react';
 
 interface GameCardProps {
     game: GameDTO;
@@ -13,6 +14,7 @@ interface GameCardProps {
 }
 
 export const GameCard = ({ game, userPick, onPickSubmit }: GameCardProps) => {
+    const { user } = useAuth0();
     const [selectedTeamId, setSelectedTeamId] = useState<number | undefined>(userPick?.selectedTeamId);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [notes, setNotes] = useState(userPick?.notes || '');
@@ -26,14 +28,18 @@ export const GameCard = ({ game, userPick, onPickSubmit }: GameCardProps) => {
     };
 
     const handleSubmit = async () => {
-        if (!selectedTeamId || isSubmitting) return;
+        if (!selectedTeamId || isSubmitting || !user) return;
 
         try {
             setIsSubmitting(true);
             await onPickSubmit({
+                id: 0,
+                userId: user.sub!,
                 gameId: game.id,
-                selectedTeamId,
-                notes: notes.trim() || undefined
+                selectedTeamId: selectedTeamId,
+                notes: notes.trim() || undefined,
+                submissionTime: new Date().toISOString(),
+                points: 0
             });
             toast.success('Pick submitted successfully');
         } catch (error) {
