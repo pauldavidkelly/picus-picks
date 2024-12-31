@@ -1,3 +1,7 @@
+```
+
+```
+
 # ToDo #
 
 - [x] Unit tests are failing
@@ -19,10 +23,18 @@
     - [ ]  banner
     - [x]  logo  
     - [x] team colours
-- [ ] Fix issue with API not being picked up correctly from .env
-- [ ] Talk to Claude to produce docs
-  - [ ] Add new section for showing teams
-  - [ ] Flesh out Task 1.10
+- [x] Fix issue with API not being picked up correctly from .env
+- [x] Talk to Claude to produce docs
+  - [x] Flesh out Task 1.10
+- [ ] Implement Picks
+  - [ ] Frontend
+  - [ ] Backend
+
+- [ ] Talk to Claude about team display
+  - [ ] Add links to all teams in lists to team page
+  - [ ] Add navigation
+  - [ ] Divisions
+
 - [ ] Add features to teams controller
 
   - [ ] Get team
