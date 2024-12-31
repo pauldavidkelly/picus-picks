@@ -2,13 +2,13 @@
 declare global {
     interface Window {
         env?: {
-            REACT_APP_API_BASE_URL?: string;
+            VITE_API_BASE_URL?: string;
         };
     }
 }
 
 export const API_CONFIG = {
-    BASE_URL: 'http://localhost:5172',
+    BASE_URL: import.meta.env.VITE_API_BASE_URL,
     ENDPOINTS: {
         GAMES: {
             BY_WEEK_AND_SEASON: (week: number, season: number) =>
