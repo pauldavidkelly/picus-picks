@@ -13,7 +13,7 @@ export const GameCard = ({ game, className = '' }: GameCardProps) => {
     const formattedGameTime = format(gameTime, 'MMM d, yyyy h:mm a');
 
     return (
-        <Card className={`w-full hover:shadow-lg transition-shadow ${className}`}>
+        <Card className={`w-full hover:shadow-lg transition-shadow ${className}`} role="article">
             <CardContent className="p-4">
                 <div className="flex justify-between items-center">
                     {/* Home Team */}
