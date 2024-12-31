@@ -28,12 +28,15 @@
   - [x] Flesh out Task 1.10
 - [x] Implement Picks
   - [ ] Frontend
-    - [ ] Build issues
+    - [x] Build issues
     - [ ] Tests are missing
     - [ ] Tests broken
     - [ ] Try it in cursor to see if it can fix it.
   - [ ] Backend
-    - [ ] Add DI for picks service
+    - [x] Add DI for picks service
+    - [ ] Users are missing
+      - [ ] Seed the Auth0 user into the db
+        - [ ] Script or manual?
   
 - [ ] Talk to Claude about team display
   - [ ] Add links to all teams in lists to team page
