@@ -1,3 +1,5 @@
+import { getApiBaseUrl } from './config/env';
+
 // API configuration
 declare global {
     interface Window {
@@ -8,7 +10,7 @@ declare global {
 }
 
 export const API_CONFIG = {
-    BASE_URL: import.meta.env.VITE_API_BASE_URL,
+    BASE_URL: getApiBaseUrl(),
     ENDPOINTS: {
         GAMES: {
             BY_WEEK_AND_SEASON: (week: number, season: number) =>

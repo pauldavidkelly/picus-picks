@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { gameService } from './gameService';
+import { useGameService } from './gameService';
 import { API_CONFIG } from '../config';
 import { ConferenceType, DivisionType, GameDTO, TeamDTO } from '../types/game';
 
@@ -9,7 +9,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 // Mock window.env
 window.env = {
-    REACT_APP_API_BASE_URL: 'http://test-api.example.com'
+    VITE_API_BASE_URL: 'http://test-api.example.com'
 };
 
 // Mock localStorage
@@ -58,7 +58,7 @@ describe('gameService', () => {
             const season = 2024;
             mockedAxios.get.mockResolvedValueOnce({ data: [mockGame] });
 
-            const result = await gameService.getGamesByWeekAndSeason(week, season);
+            const result = await useGameService().getGamesByWeekAndSeason(week, season);
 
             expect(mockedAxios.get).toHaveBeenCalledWith(
                 `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.GAMES.BY_WEEK_AND_SEASON(week, season)}`,
@@ -75,7 +75,7 @@ describe('gameService', () => {
             const error = new Error('Network error');
             mockedAxios.get.mockRejectedValueOnce(error);
 
-            await expect(gameService.getGamesByWeekAndSeason(1, 2024))
+            await expect(useGameService().getGamesByWeekAndSeason(1, 2024))
                 .rejects.toThrow(error);
         });
     });
@@ -85,7 +85,7 @@ describe('gameService', () => {
             const gameId = 1;
             mockedAxios.get.mockResolvedValueOnce({ data: mockGame });
 
-            const result = await gameService.getGameById(gameId);
+            const result = await useGameService().getGameById(gameId);
 
             expect(mockedAxios.get).toHaveBeenCalledWith(
                 `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.GAMES.BY_ID(gameId)}`,
@@ -102,7 +102,7 @@ describe('gameService', () => {
             const error = new Error('Network error');
             mockedAxios.get.mockRejectedValueOnce(error);
 
-            await expect(gameService.getGameById(1))
+            await expect(useGameService().getGameById(1))
                 .rejects.toThrow(error);
         });
     });
@@ -113,7 +113,7 @@ describe('gameService', () => {
             const season = 2024;
             mockedAxios.get.mockResolvedValueOnce({ data: [mockGame] });
 
-            const result = await gameService.getGamesByTeamAndSeason(teamId, season);
+            const result = await useGameService().getGamesByTeamAndSeason(teamId, season);
 
             expect(mockedAxios.get).toHaveBeenCalledWith(
                 `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.GAMES.BY_TEAM_AND_SEASON(teamId, season)}`,
@@ -130,7 +130,7 @@ describe('gameService', () => {
             const error = new Error('Network error');
             mockedAxios.get.mockRejectedValueOnce(error);
 
-            await expect(gameService.getGamesByTeamAndSeason(1, 2024))
+            await expect(useGameService().getGamesByTeamAndSeason(1, 2024))
                 .rejects.toThrow(error);
         });
     });

@@ -4,32 +4,36 @@ import { GameCard } from '@/components/picks/GameCard';
 import { PicksGrid } from '@/components/picks/PicksGrid';
 import { PicksStatus } from '@/components/picks/PicksStatus';
 import { picksService } from '@/services/picksService';
-import { gamesService } from '@/services/gamesService';
-import { Game } from '@/types/game';
+import { useGameService } from '@/services/gameService';
+import { GameDTO } from '@/types/game';
 import { LeaguePicks, Pick, PicksStatus as PicksStatusType } from '@/types/picks';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 
 export const PicksPage = () => {
-    const { week = '1', season = new Date().getFullYear().toString() } = useParams();
-    
-    const [games, setGames] = useState<Game[]>([]);
+    const [games, setGames] = useState<GameDTO[]>([]);
     const [myPicks, setMyPicks] = useState<Pick[]>([]);
     const [leaguePicks, setLeaguePicks] = useState<LeaguePicks | null>(null);
     const [picksStatus, setPicksStatus] = useState<PicksStatusType | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-
-    const weekNum = parseInt(week);
-    const seasonNum = parseInt(season);
+    const { week, season } = useParams<{ week: string; season: string }>();
+    const weekNum = week ? parseInt(week) : undefined;
+    const seasonNum = season ? parseInt(season) : undefined;
+    const gameService = useGameService();
 
     useEffect(() => {
         const loadData = async () => {
             try {
+                if (!weekNum || !seasonNum) {
+                    toast.error('Invalid week or season parameters');
+                    return;
+                }
+                
                 setIsLoading(true);
                 
                 // Load games for the week
-                const gamesData = await gamesService.getGames(weekNum, seasonNum);
+                const gamesData = await gameService.getGamesByWeekAndSeason(weekNum, seasonNum);
                 setGames(gamesData);
 
                 // Load user's picks and status

@@ -4,36 +4,51 @@ import userEvent from '@testing-library/user-event';
 
 // Mock the Radix UI components
 jest.mock("@/components/ui/select", () => ({
-    Select: ({ children, onValueChange, value }: any) => (
+    Select: ({ children, onValueChange, value }: {
+        children: React.ReactNode;
+        onValueChange?: (value: string) => void;
+        value?: string;
+    }) => (
         <div 
             data-testid="select-root" 
             data-value={value}
-            onClick={(e: any) => {
+            onClick={(e: React.MouseEvent<HTMLDivElement>) => {
                 // Simulate value change when clicked
-                if (e.target.dataset.value) {
-                    onValueChange?.(e.target.dataset.value);
+                const target = e.target as HTMLElement;
+                if (target.dataset.value) {
+                    onValueChange?.(target.dataset.value);
                 }
             }}
         >
             {children}
         </div>
     ),
-    SelectTrigger: ({ children, className }: any) => (
+    SelectTrigger: ({ children, className }: {
+        children: React.ReactNode;
+        className?: string;
+    }) => (
         <button data-testid="week-selector" className={className}>
             {children}
         </button>
     ),
-    SelectValue: ({ children }: any) => (
+    SelectValue: ({ children }: {
+        children: React.ReactNode;
+    }) => (
         <span data-testid="select-value">
             {typeof children === 'string' ? children : children || 'Select Week'}
         </span>
     ),
-    SelectContent: ({ children }: any) => (
+    SelectContent: ({ children }: {
+        children: React.ReactNode;
+    }) => (
         <div data-testid="select-content">
             {children}
         </div>
     ),
-    SelectItem: ({ value, children }: any) => (
+    SelectItem: ({ value, children }: {
+        value: string;
+        children: React.ReactNode;
+    }) => (
         <div 
             role="option" 
             data-value={value}

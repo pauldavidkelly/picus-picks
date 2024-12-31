@@ -1,11 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { GamesGrid } from './GamesGrid';
-import { gameService } from '../services/gameService';
+import { useGameService } from '../services/gameService';
 import { ConferenceType, DivisionType, GameDTO } from '../types/game';
 
-// Mock the gameService
+// Mock the gameService hook
 jest.mock('../services/gameService');
-const mockedGameService = gameService as jest.Mocked<typeof gameService>;
+const mockedUseGameService = useGameService as jest.MockedFunction<typeof useGameService>;
 
 describe('GamesGrid', () => {
     const mockGames: GameDTO[] = [
@@ -58,14 +58,22 @@ describe('GamesGrid', () => {
     });
 
     it('shows loading state initially', () => {
-        mockedGameService.getGamesByWeekAndSeason.mockResolvedValue([]);
+        mockedUseGameService.mockReturnValue({
+            getGamesByWeekAndSeason: jest.fn().mockResolvedValue([]),
+            getGameById: jest.fn(),
+            getGamesByTeamAndSeason: jest.fn()
+        });
         render(<GamesGrid week={1} season={2024} />);
         
         expect(screen.getAllByTestId('skeleton')).toHaveLength(6);
     });
 
     it('displays games when loaded successfully', async () => {
-        mockedGameService.getGamesByWeekAndSeason.mockResolvedValue(mockGames);
+        mockedUseGameService.mockReturnValue({
+            getGamesByWeekAndSeason: jest.fn().mockResolvedValue(mockGames),
+            getGameById: jest.fn(),
+            getGamesByTeamAndSeason: jest.fn()
+        });
         render(<GamesGrid week={1} season={2024} />);
         
         await waitFor(() => {
@@ -77,7 +85,11 @@ describe('GamesGrid', () => {
     });
 
     it('shows error message when loading fails', async () => {
-        mockedGameService.getGamesByWeekAndSeason.mockRejectedValue(new Error('Failed to load'));
+        mockedUseGameService.mockReturnValue({
+            getGamesByWeekAndSeason: jest.fn().mockRejectedValue(new Error('Failed to load')),
+            getGameById: jest.fn(),
+            getGamesByTeamAndSeason: jest.fn()
+        });
         render(<GamesGrid week={1} season={2024} />);
         
         await waitFor(() => {
@@ -86,7 +98,11 @@ describe('GamesGrid', () => {
     });
 
     it('shows message when no games are available', async () => {
-        mockedGameService.getGamesByWeekAndSeason.mockResolvedValue([]);
+        mockedUseGameService.mockReturnValue({
+            getGamesByWeekAndSeason: jest.fn().mockResolvedValue([]),
+            getGameById: jest.fn(),
+            getGamesByTeamAndSeason: jest.fn()
+        });
         render(<GamesGrid week={1} season={2024} />);
         
         await waitFor(() => {
@@ -95,26 +111,37 @@ describe('GamesGrid', () => {
     });
 
     it('fetches games with correct parameters', async () => {
-        mockedGameService.getGamesByWeekAndSeason.mockResolvedValue(mockGames);
+        const getGamesByWeekAndSeasonMock = jest.fn().mockResolvedValue(mockGames);
+        mockedUseGameService.mockReturnValue({
+            getGamesByWeekAndSeason: getGamesByWeekAndSeasonMock,
+            getGameById: jest.fn(),
+            getGamesByTeamAndSeason: jest.fn()
+        });
         render(<GamesGrid week={1} season={2024} />);
         
         await waitFor(() => {
-            expect(mockedGameService.getGamesByWeekAndSeason).toHaveBeenCalledWith(1, 2024);
+            expect(getGamesByWeekAndSeasonMock).toHaveBeenCalledWith(1, 2024);
         });
     });
 
     it('refetches games when week or season changes', async () => {
-        mockedGameService.getGamesByWeekAndSeason.mockResolvedValue(mockGames);
+        const getGamesByWeekAndSeasonMock = jest.fn().mockResolvedValue(mockGames);
+        mockedUseGameService.mockReturnValue({
+            getGamesByWeekAndSeason: getGamesByWeekAndSeasonMock,
+            getGameById: jest.fn(),
+            getGamesByTeamAndSeason: jest.fn()
+        });
         const { rerender } = render(<GamesGrid week={1} season={2024} />);
         
         await waitFor(() => {
-            expect(mockedGameService.getGamesByWeekAndSeason).toHaveBeenCalledWith(1, 2024);
+            expect(getGamesByWeekAndSeasonMock).toHaveBeenCalledWith(1, 2024);
         });
 
         rerender(<GamesGrid week={2} season={2024} />);
         
         await waitFor(() => {
-            expect(mockedGameService.getGamesByWeekAndSeason).toHaveBeenCalledWith(2, 2024);
+            expect(getGamesByWeekAndSeasonMock).toHaveBeenCalledTimes(2);
+            expect(getGamesByWeekAndSeasonMock).toHaveBeenNthCalledWith(2, 2, 2024);
         });
     });
 });

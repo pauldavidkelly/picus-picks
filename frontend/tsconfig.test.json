@@ -3,8 +3,9 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "types": ["jest", "@testing-library/jest-dom", "node"],
-    "module": "commonjs",
-    "moduleResolution": "node"
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true
   },
   "include": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/test/**/*"]
 }

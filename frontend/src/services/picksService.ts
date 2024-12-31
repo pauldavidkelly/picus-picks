@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { config } from '../config';
+import { getApiBaseUrl } from '../config/env';
 import { Pick, PicksStatus, LeaguePicks, SubmitPickRequest } from '../types/picks';
 
-const API_URL = `${config.apiUrl}/api/picks`;
+const API_URL = `${getApiBaseUrl()}/api/picks`;
 
 export const picksService = {
     submitPick: async (pick: SubmitPickRequest): Promise<Pick> => {
