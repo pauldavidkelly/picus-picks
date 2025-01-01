@@ -18,7 +18,7 @@ export const GamesPage = () => {
       
       <GamesGrid 
         week={selectedWeek} 
-        season={currentYear} 
+        season={2024} 
       />
     </div>
   );

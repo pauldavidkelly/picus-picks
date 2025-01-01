@@ -20,15 +20,32 @@
   - [x] Show games by week for making picks
   - [x] Show games from previous weeks with scores
   - [x] Show team using
-    - [ ]  banner
+    - [ ]  banner as background for cell
     - [x]  logo  
     - [x] team colours
+    - [ ] Better font
 - [x] Fix issue with API not being picked up correctly from .env
 - [x] Talk to Claude to produce docs
   - [x] Flesh out Task 1.10
+- [ ] Do we need a seasons table?
+  - [ ] Games page works out season on current year
+  - [ ] Talk to Claude about season table
+    - [ ] Would need to update games to be part of a season
+
+- [ ] Talk to Claude about Leagues and Users
+  - [ ] Picks can't be completed without a valid UserId
+    - [ ] Add users to user table
+    - [ ] Do I add a list of allowed emails to the appSettings to allow only certain people in?
+
+  - [ ] Add a league to allow users to be a part of a league
+
 - [ ] Implement Picks
   - [ ] Frontend
+    - [ ] Tests are not complete
+    - [ ] Use AI to check which tests are still needed
+      - [ ] Try Traycer
   - [ ] Backend
+    - [ ] User info stuff
 
 - [ ] Talk to Claude about team display
   - [ ] Add links to all teams in lists to team page
