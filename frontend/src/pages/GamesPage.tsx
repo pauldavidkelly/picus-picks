@@ -15,10 +15,10 @@ export const GamesPage = () => {
           onChange={setSelectedWeek}
         />
       </div>
-
-      <GamesGrid
-        week={selectedWeek}
-        season={currentYear}
+      
+      <GamesGrid 
+        week={selectedWeek} 
+        season={2024} 
       />
     </div>
   );
