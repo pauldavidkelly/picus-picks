@@ -13,12 +13,20 @@ export function Navbar() {
             Picus NFL Picks
           </Link>
           {isAuthenticated && (
-            <Link 
-              to="/games" 
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-            >
-              Games
-            </Link>
+            <>
+              <Link 
+                to="/games" 
+                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+              >
+                Games
+              </Link>
+              <Link 
+                to="/picks/2023/1" 
+                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+              >
+                Picks
+              </Link>
+            </>
           )}
         </div>
         <div className="flex items-center space-x-4">
