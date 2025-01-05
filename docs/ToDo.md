@@ -31,27 +31,22 @@
   - [ ] Games page works out season on current year
   - [ ] Talk to Claude about season table
     - [ ] Would need to update games to be part of a season
-
-- [ ] Talk to Claude about Leagues and Users
-  - [ ] Picks can't be completed without a valid UserId
-    - [ ] Add users to user table
-    - [ ] Do I add a list of allowed emails to the appSettings to allow only certain people in?
+- [x] Talk to Claude about Leagues and Users
+  - [x] Picks can't be completed without a valid UserId
+    - [x] Add users to user table
+    - [x] Do I add a list of allowed emails to the appSettings to allow only certain people in?
 
   - [ ] Add a league to allow users to be a part of a league
-
 - [ ] Implement Picks
   - [ ] Frontend
     - [ ] Tests are not complete
-    - [ ] Use AI to check which tests are still needed
-      - [ ] Try Traycer
-  - [ ] Backend
-    - [ ] User info stuff
-
+    - [ ] What happens to complete games with picks?
+  - [x] Backend
+    - [x] User info stuff
 - [ ] Talk to Claude about team display
   - [ ] Add links to all teams in lists to team page
   - [ ] Add navigation
   - [ ] Divisions
-
 - [ ] Add features to teams controller
 
   - [ ] Get team
@@ -70,4 +65,5 @@
   - [ ] Create league
   - [ ] Add user to league
   - [ ] Remove user from league 
+  - [ ] Sync games from external API
 
