@@ -5,7 +5,12 @@ export const useAuthService = () => {
 
     const getToken = async () => {
         try {
-            return await getAccessTokenSilently();
+            return await getAccessTokenSilently({
+                authorizationParams: {
+                    scope: 'openid profile email ',
+                    response_type: 'token id_token',
+                }
+            });
         } catch (error) {
             console.error('Error getting access token:', error);
             throw error;
