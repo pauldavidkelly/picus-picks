@@ -57,6 +57,11 @@ export const GameCard = ({ game, userPick, onPickSubmit }: GameCardProps) => {
         const isWinner = game.winningTeam?.id === team.id;
         const wasPickedByUser = userPick?.selectedTeamId === team.id;
         
+        // Calculate isCorrect if not provided by the backend
+        const isCorrect = userPick?.isCorrect ?? (
+            isGameCompleted && wasPickedByUser && isWinner
+        );
+        
         let className = '';
         if (isGameCompleted) {
             if (isWinner) {
@@ -73,6 +78,16 @@ export const GameCard = ({ game, userPick, onPickSubmit }: GameCardProps) => {
         
         return { className };
     };
+
+    // Debug info
+    console.log('Game:', {
+        id: game.id,
+        isCompleted: game.isCompleted,
+        winningTeamId: game.winningTeam?.id,
+        homeScore: game.homeTeamScore,
+        awayScore: game.awayTeamScore
+    });
+    console.log('UserPick:', userPick);
 
     return (
         <Card className="w-full max-w-xl">
