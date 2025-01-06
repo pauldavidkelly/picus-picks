@@ -79,6 +79,29 @@ export const useGameService = () => {
                 console.error('Error fetching team games:', error);
                 throw error;
             }
+        },
+        
+        /**
+         * Syncs games for a specific league and season
+         * @param leagueId - The league ID
+         * @param season - The season year
+         */
+        async syncGames(leagueId: number, season: number): Promise<void> {
+            try {
+                const token = await getToken();
+                await axios.post(
+                    `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.GAMES.UPSERT(leagueId, season)}`,
+                    {},  // empty body as it's not needed
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+            } catch (error) {
+                console.error('Error syncing games:', error);
+                throw error;
+            }
         }
     };
 };

@@ -18,6 +18,8 @@ export const API_CONFIG = {
             BY_ID: (id: number) => `/api/Games/${id}`,
             BY_TEAM_AND_SEASON: (teamId: number, season: number) =>
                 `/api/Games/team/${teamId}/season/${season}`,
+            UPSERT: (leagueId: number, season: number) =>
+                `/api/Games/upsert/${leagueId}/${season}`,
         }
     }
 };
