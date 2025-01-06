@@ -21,6 +21,7 @@ export const GameCard = ({ game, userPick, onPickSubmit }: GameCardProps) => {
     
     const isPastDeadline = new Date(game.pickDeadline) < new Date();
     const hasSelected = selectedTeamId !== undefined;
+    const isGameCompleted = game.isCompleted;
 
     const handleTeamSelect = (teamId: number) => {
         if (isPastDeadline) return;
@@ -50,15 +51,52 @@ export const GameCard = ({ game, userPick, onPickSubmit }: GameCardProps) => {
         }
     };
 
+    const getTeamStyle = (team: TeamDTO) => {
+        if (!isPastDeadline) return {};
+        
+        const isWinner = game.winningTeam?.id === team.id;
+        const wasPickedByUser = userPick?.selectedTeamId === team.id;
+        
+        let className = '';
+        if (isGameCompleted) {
+            if (isWinner) {
+                className = 'border-2 border-green-500';
+                if (wasPickedByUser) {
+                    className += ' bg-green-100';
+                }
+            } else if (wasPickedByUser) {
+                className = 'border-2 border-red-500 bg-red-100';
+            }
+        } else if (wasPickedByUser) {
+            className = 'border-2 border-blue-500 bg-blue-100';
+        }
+        
+        return { className };
+    };
+
     return (
         <Card className="w-full max-w-xl">
             <CardHeader className="flex justify-between items-center">
-                <div className="text-sm text-muted-foreground">
-                    {new Date(game.gameTime).toLocaleString()}
+                <div className="space-y-1">
+                    <div className="text-sm text-muted-foreground">
+                        {new Date(game.gameTime).toLocaleString()}
+                    </div>
+                    {isGameCompleted && game.homeTeamScore !== undefined && game.awayTeamScore !== undefined && (
+                        <div className="text-sm font-medium">
+                            Final: {game.awayTeam.name} {game.awayTeamScore} - {game.homeTeamScore} {game.homeTeam.name}
+                        </div>
+                    )}
                 </div>
-                {isPastDeadline && (
-                    <Badge variant="secondary">Locked</Badge>
-                )}
+                <div className="flex gap-2">
+                    {isPastDeadline && (
+                        <Badge variant="secondary">Locked</Badge>
+                    )}
+                    {isGameCompleted && userPick && (
+                        <Badge variant={userPick.isCorrect ? "success" : "destructive"}>
+                            {userPick.isCorrect ? "Correct" : "Incorrect"}
+                        </Badge>
+                    )}
+                </div>
             </CardHeader>
             <CardContent>
                 <div className="flex justify-between items-center gap-4">
@@ -67,6 +105,7 @@ export const GameCard = ({ game, userPick, onPickSubmit }: GameCardProps) => {
                         isSelected={selectedTeamId === game.awayTeam.id}
                         onClick={() => handleTeamSelect(game.awayTeam.id)}
                         disabled={isPastDeadline}
+                        {...getTeamStyle(game.awayTeam)}
                     />
                     <span className="text-xl font-bold">@</span>
                     <TeamButton
@@ -74,6 +113,7 @@ export const GameCard = ({ game, userPick, onPickSubmit }: GameCardProps) => {
                         isSelected={selectedTeamId === game.homeTeam.id}
                         onClick={() => handleTeamSelect(game.homeTeam.id)}
                         disabled={isPastDeadline}
+                        {...getTeamStyle(game.homeTeam)}
                     />
                 </div>
 
@@ -105,12 +145,12 @@ interface TeamButtonProps {
     disabled?: boolean;
 }
 
-const TeamButton = ({ team, isSelected, onClick, disabled }: TeamButtonProps) => (
+const TeamButton = ({ team, isSelected, onClick, disabled, className }: TeamButtonProps) => (
     <Button
         variant={isSelected ? 'default' : 'outline'}
         onClick={onClick}
         disabled={disabled}
-        className="flex-1 h-20 flex flex-col items-center justify-center gap-2"
+        className={`flex-1 h-20 flex flex-col items-center justify-center gap-2 ${className}`}
     >
         <img
             src={team.iconUrl}
