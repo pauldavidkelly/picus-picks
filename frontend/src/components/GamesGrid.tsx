@@ -15,12 +15,18 @@ export const GamesGrid = ({ week, season, className = '' }: GamesGridProps) => {
     const [games, setGames] = useState<GameDTO[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const gameService = useMemo(() => useGameService(), []);
+
+    const gameService = useMemo(() => {
+        const service = useGameService();
+        return {
+            getGamesByWeekAndSeason: service.getGamesByWeekAndSeason.bind(service)
+        };
+    }, []);
 
     useEffect(() => {
         let mounted = true;
 
-        const fetchGames = async () => {
+        const loadGames = async () => {
             if (!mounted) return;
             
             setLoading(true);
@@ -47,12 +53,12 @@ export const GamesGrid = ({ week, season, className = '' }: GamesGridProps) => {
             }
         };
 
-        fetchGames();
+        loadGames();
 
         return () => {
             mounted = false;
         };
-    }, [week, season, gameService]);
+    }, [gameService, week, season]);
 
     if (loading) {
         return (
