@@ -5,6 +5,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { getWeekDisplayText } from "@/utils/weekUtils";
 
 interface Week {
     code: number;
@@ -20,14 +21,14 @@ export const WeekSelector: React.FC<WeekSelectorProps> = ({ selectedWeek, onChan
     const weeks: Week[] = [
         ...Array.from({ length: 18 }, (_, i) => ({
             code: i + 1,
-            display: `Week ${i + 1}`
+            display: getWeekDisplayText(i + 1)
         })),
-        { code: 160, display: "Wild Card" }
+        { code: 160, display: getWeekDisplayText(160) }
     ];
 
     const getWeekDisplay = (code: number): string => {
         const week = weeks.find(w => w.code === code);
-        return week?.display || `Week ${code}`;
+        return week?.display || getWeekDisplayText(code);
     };
 
     return (
