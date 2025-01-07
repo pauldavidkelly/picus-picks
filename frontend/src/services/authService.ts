@@ -7,8 +7,7 @@ export const useAuthService = () => {
         try {
             return await getAccessTokenSilently({
                 authorizationParams: {
-                    scope: 'openid profile email ',
-                    response_type: 'token id_token',
+                    scope: 'openid profile email offline_access'
                 }
             });
         } catch (error) {
