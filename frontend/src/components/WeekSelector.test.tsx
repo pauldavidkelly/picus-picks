@@ -1,6 +1,5 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, userEvent } from '@testing-library/react';
 import { WeekSelector } from './WeekSelector';
-import userEvent from '@testing-library/user-event';
 
 // Mock the Radix UI components
 jest.mock("@/components/ui/select", () => ({
@@ -59,6 +58,12 @@ jest.mock("@/components/ui/select", () => ({
 }));
 
 describe('WeekSelector', () => {
+    const mockOnChange = jest.fn();
+
+    beforeEach(() => {
+        mockOnChange.mockClear();
+    });
+
     it('renders with current week selected', () => {
         render(
             <WeekSelector 
@@ -88,5 +93,44 @@ describe('WeekSelector', () => {
         await userEvent.click(week2Option);
         
         expect(mockOnChange).toHaveBeenCalledWith(2);
+    });
+
+    it('renders regular season week correctly', () => {
+        render(<WeekSelector selectedWeek={1} onChange={mockOnChange} />);
+        expect(screen.getByText('Week 1')).toBeInTheDocument();
+    });
+
+    it('renders Wild Card week correctly', () => {
+        render(<WeekSelector selectedWeek={160} onChange={mockOnChange} />);
+        expect(screen.getByText('Wild Card')).toBeInTheDocument();
+    });
+
+    it('includes both regular season and playoff weeks in dropdown', async () => {
+        render(<WeekSelector selectedWeek={1} onChange={mockOnChange} />);
+        
+        // Open the dropdown
+        const trigger = screen.getByTestId('week-selector');
+        fireEvent.click(trigger);
+
+        // Check for regular season weeks
+        expect(screen.getByText('Week 1')).toBeInTheDocument();
+        expect(screen.getByText('Week 18')).toBeInTheDocument();
+        
+        // Check for Wild Card week
+        expect(screen.getByText('Wild Card')).toBeInTheDocument();
+    });
+
+    it('calls onChange with correct week code when selecting Wild Card week', async () => {
+        render(<WeekSelector selectedWeek={1} onChange={mockOnChange} />);
+        
+        // Open the dropdown
+        const trigger = screen.getByTestId('week-selector');
+        fireEvent.click(trigger);
+
+        // Select Wild Card week
+        const wildCardOption = screen.getByText('Wild Card');
+        fireEvent.click(wildCardOption);
+
+        expect(mockOnChange).toHaveBeenCalledWith(160);
     });
 });

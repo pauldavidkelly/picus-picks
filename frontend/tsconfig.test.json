@@ -1,6 +1,8 @@
 {
   "extends": "./tsconfig.app.json",
   "compilerOptions": {
-    "types": ["@testing-library/jest-dom"]
+    "types": ["@testing-library/jest-dom", "node", "jest"],
+    "module": "CommonJS",
+    "noUnusedParameters": false
   }
 }
