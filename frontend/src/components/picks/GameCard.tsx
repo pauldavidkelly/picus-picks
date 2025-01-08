@@ -52,8 +52,7 @@ export const GameCard = ({ game, userPick, onPickSubmit }: GameCardProps) => {
     };
 
     const getTeamStyle = (team: TeamDTO) => {
-        if (!isPastDeadline) return {};
-        
+        const isCurrentlySelected = selectedTeamId === team.id;
         const isWinner = game.winningTeam?.id === team.id;
         const wasPickedByUser = userPick?.selectedTeamId === team.id;
         
@@ -63,17 +62,24 @@ export const GameCard = ({ game, userPick, onPickSubmit }: GameCardProps) => {
         );
         
         let className = '';
-        if (isGameCompleted) {
-            if (isWinner) {
-                className = 'border-2 border-green-500';
-                if (wasPickedByUser) {
-                    className += ' bg-green-100';
+        
+        if (!isPastDeadline && isCurrentlySelected) {
+            // Show currently selected team before submission
+            className = 'border-2 border-blue-500 bg-blue-100';
+        } else if (isPastDeadline) {
+            // Show submitted pick after deadline
+            if (isGameCompleted) {
+                if (isWinner) {
+                    className = 'border-2 border-green-500';
+                    if (wasPickedByUser) {
+                        className += ' bg-green-100';
+                    }
+                } else if (wasPickedByUser) {
+                    className = 'border-2 border-red-500 bg-red-100';
                 }
             } else if (wasPickedByUser) {
-                className = 'border-2 border-red-500 bg-red-100';
+                className = 'border-2 border-blue-500 bg-blue-100';
             }
-        } else if (wasPickedByUser) {
-            className = 'border-2 border-blue-500 bg-blue-100';
         }
         
         return { className };
