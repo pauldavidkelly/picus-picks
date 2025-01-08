@@ -45,16 +45,19 @@
     - [x] Add users to user table
     - [x] Do I add a list of allowed emails to the appSettings to allow only certain people in?
 
+
   - [ ] Add a league to allow users to be a part of a league
 
 - [ ] Implement Picks
   - [ ] Frontend
     - [ ] Tests are not complete
     - [ ] What happens to complete games with picks?
+    - [ ] Picks problems
+      - [ ] API is not returning picks
+        - [ ] 500 error
+        - [ ] 403 error
   - [x] Backend
     - [x] User info stuff
-    - [ ] Picks service is broken
-      - [ ] Debug to workout what is wrong
 
 - [ ] Talk to Claude about team display
   - [ ] Add links to all teams in lists to team page
