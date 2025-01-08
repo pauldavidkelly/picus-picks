@@ -23,7 +23,7 @@ export const WeekSelector: React.FC<WeekSelectorProps> = ({ selectedWeek, onChan
             code: i + 1,
             display: getWeekDisplayText(i + 1)
         })),
-        { code: 160, display: getWeekDisplayText(160) }
+        { code: 19, display: getWeekDisplayText(19) }
     ];
 
     const getWeekDisplay = (code: number): string => {
