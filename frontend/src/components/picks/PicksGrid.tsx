@@ -18,7 +18,8 @@ interface PicksGridProps {
 
 export const PicksGrid = ({ leaguePicks, games }: PicksGridProps) => {
     const getTeamForPick = (pick: VisiblePick | undefined, game: GameDTO): TeamDTO | null => {
-        if (!pick?.isVisible) return null;
+        // TEMPORARY DEBUG: Show all picks that exist
+        if (!pick?.hasPick) return null;
         const team = pick.selectedTeamId === game.homeTeam.id ? game.homeTeam : game.awayTeam;
         return team;
     };
@@ -53,7 +54,8 @@ export const PicksGrid = ({ leaguePicks, games }: PicksGridProps) => {
                                 
                                 return (
                                     <TableCell key={user.userId} className="text-center">
-                                        {pick?.isVisible ? (
+                                        {/* TEMPORARY DEBUG: Show all picks that exist */}
+                                        {pick?.hasPick ? (
                                             <Tooltip>
                                                 <TooltipTrigger>
                                                     <Badge
@@ -71,8 +73,6 @@ export const PicksGrid = ({ leaguePicks, games }: PicksGridProps) => {
                                                     <p>{team?.name}</p>
                                                 </TooltipContent>
                                             </Tooltip>
-                                        ) : pick?.hasPick ? (
-                                            <Badge variant="secondary">Hidden</Badge>
                                         ) : (
                                             <span className="text-muted-foreground">No Pick</span>
                                         )}
