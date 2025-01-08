@@ -81,9 +81,22 @@
 
 - [ ] Add Admin page
   - [ ] Approve users
+
   - [ ] Kick users
+
   - [ ] Create league
+
   - [ ] Add user to league
+
   - [ ] Remove user from league 
+
   - [ ] Sync games from external API
+
+    ## Non dev stuff to fix
+
+- [ ] Get dotnet debugging working in Windsurf
+
+- [ ] Add windsurfrules
+
+- [ ] Add global rules
 
