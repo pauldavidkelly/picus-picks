@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { GameCard } from '@/components/picks/GameCard';
 import { PicksGrid } from '@/components/picks/PicksGrid';
@@ -11,6 +11,8 @@ import { LeaguePicks, Pick, PicksStatus as PicksStatusType } from '@/types/picks
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
+import { getWeekDisplayText } from '@/utils/weekUtils';
+import { WeekSelector } from '@/components/WeekSelector';
 
 export const PicksPage = () => {
     const [games, setGames] = useState<GameDTO[]>([]);
@@ -23,6 +25,7 @@ export const PicksPage = () => {
     const seasonNum = season ? parseInt(season) : undefined;
     const gameService = useGameService();
     const { getAccessTokenSilently } = useAuth0();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const loadData = async () => {
@@ -81,15 +84,24 @@ export const PicksPage = () => {
         }
     };
 
+    const handleWeekChange = (newWeek: number) => {
+        if (seasonNum) {
+            navigate(`/picks/${seasonNum}/${newWeek}`);
+        }
+    };
+
     if (isLoading) {
         return <LoadingSkeleton />;
     }
 
     return (
         <div className="container py-6 space-y-6">
-            <h1 className="text-3xl font-bold">
-                Week {week} Picks
-            </h1>
+            <div className="flex justify-between items-center">
+                <h1 className="text-3xl font-bold">
+                    {weekNum ? getWeekDisplayText(weekNum) : ''} Picks
+                </h1>
+                {weekNum && <WeekSelector selectedWeek={weekNum} onChange={handleWeekChange} />}
+            </div>
 
             {picksStatus && (
                 <PicksStatus status={picksStatus} />

@@ -5,6 +5,12 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { getWeekDisplayText } from "@/utils/weekUtils";
+
+interface Week {
+    code: number;
+    display: string;
+}
 
 interface WeekSelectorProps {
     selectedWeek: number;
@@ -12,7 +18,18 @@ interface WeekSelectorProps {
 }
 
 export const WeekSelector: React.FC<WeekSelectorProps> = ({ selectedWeek, onChange }) => {
-    const weeks = Array.from({ length: 18 }, (_, i) => i + 1);
+    const weeks: Week[] = [
+        ...Array.from({ length: 18 }, (_, i) => ({
+            code: i + 1,
+            display: getWeekDisplayText(i + 1)
+        })),
+        { code: 19, display: getWeekDisplayText(19) }
+    ];
+
+    const getWeekDisplay = (code: number): string => {
+        const week = weeks.find(w => w.code === code);
+        return week?.display || getWeekDisplayText(code);
+    };
 
     return (
         <Select 
@@ -20,15 +37,15 @@ export const WeekSelector: React.FC<WeekSelectorProps> = ({ selectedWeek, onChan
             onValueChange={(value) => onChange(Number(value))}
         >
             <SelectTrigger className="w-[180px] bg-white dark:bg-gray-800" data-testid="week-selector">
-                <SelectValue>Week {selectedWeek}</SelectValue>
+                <SelectValue>{getWeekDisplay(selectedWeek)}</SelectValue>
             </SelectTrigger>
             <SelectContent className="bg-white dark:bg-gray-800">
                 {weeks.map((week) => (
                     <SelectItem 
-                        key={week} 
-                        value={week.toString()}
+                        key={week.code} 
+                        value={week.code.toString()}
                     >
-                        Week {week}
+                        {week.display}
                     </SelectItem>
                 ))}
             </SelectContent>
