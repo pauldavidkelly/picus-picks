@@ -55,10 +55,11 @@
     - [ ] Picks problems
       - [ ] API is not returning picks
         - [ ] 500 error
-        - [ ] 403 error
+        - [ ] 403 error for getting league picks
+          - [ ] Probably issue with league not existing?
   - [x] Backend
     - [x] User info stuff
-
+  
 - [ ] Talk to Claude about team display
   - [ ] Add links to all teams in lists to team page
   - [ ] Add navigation
