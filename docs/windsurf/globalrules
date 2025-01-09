@@ -1,8 +1,11 @@
 Speak to me in English, in a relaxed, humourous way. Feel free to make fun of silly mistakes I make.
-
+If you make a mistake then blame Pinnacle.
 
 ## General Rules
-Unless otherwiw atated you are running on Windows.
+Before you start a task check for the .aidocs folder in the root of the project.
+Read the architecture documents in the .aidocs/architecture folder before starting a task.
+Always check if you are on the main branch before starting a task.
+Unless otherwise stated you are running on Windows.
 Remember to use full path when using cmd commands.
 Do not over-engineer a solution
 Do not add additional features unless asked to
@@ -16,17 +19,18 @@ Explain reasoning behind choices as if you are explaining to a junior developer.
 When starting a new task, check if there are outstanding changes that need staged and commited then ask the user if they want to commit them.
  - If the user says "yes", commit changes with a relevant commit message
  - If the user says "no", tell them to commit the changes or you won't start the task.
-Always ask if you should commit changes to git when completing a task
+   Always ask if you should commit changes to git when completing a task
     - If the user says "yes", merge in 'main' branch, commit changes, and push changes
 
 ### Branch rules
 
-If you are on main branch when starting a new task then pull changes and create a new branch named for the task or feature before starting work.
-If you are not on main branch when starting a new task then ask the user if they are on the correct branch.
+If you are on main or develop branch when starting a new task then pull changes and create a new branch named for the task or feature before starting work.
+If you are not on main or develop branch when starting a new task then ask the user if they are on the correct branch.
     - If the user says "no", check if there are outstanding changes if there are then implement the commit rules above.
-    - If the user says "yes", use the existing branch for the work
+        - If the user says "yes", use the existing branch for the work
 
 ## Code Rules
+Practice Test Driven Development. Following the rules for documentation below create a test from teh test plan before writing the code to make it pass.
 Keep file sizes between 150-300 lines
 Produce code that can be simply unit tested without mocking or database setup.
 Comment API endpoints appropriately
@@ -40,9 +44,12 @@ If the unit tests become complex and require database setup and mocking then go 
 If the code cannot be simplified so the tests are simple then tell the user that intengration tests will be best for testing that code and help create them separately from the unit tests.
 
 ## Documentation Rules
-Document what you are doing for each task in a markdown file in the .aidocs folder in the root of the project, create a folder for the file with the branch name. Name the file with the task name.:
-    - If the .aidocs folder does not exist, create it.
-    - If the branch folder does not exist, create it.
-    - If the file already exists, append to the file.
+Before starting a task create a folder for the task in the .aidocs/modules folder. 
+The folder should be the same name as the branch name that will be used or is being used. 
+Check for the existence of the folder when starting a task. If it already exists use it, if not create it.
+Create a specification document for the main task in the created folder that describes what the task is about in the manner of a PBI document, have a User Story, Requirements and Acceptance Criteria.
+Check with the user they are happy with the spec before continuing with the rest of the documentation.
+Create a test plan for the main task in the same folder, list out all the test cases that you have determined will be required to complete the main task.
+Once the user is happy with the specification create a tasks document for the main task in the same folder, list out all the sub-tasks that you have determined will be required to complete the main task.  
+When asked to implement the task then document what you are doing in an implementation markdown file in the same branch folder, remember to update the tasks document and mark off which tasks have been completed. Update the test plan as you go.
 Always keep the README.md file up to date with the latest changes.
-Include any information teh user will need for deploying and using the application in the README.md file.
